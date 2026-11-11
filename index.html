@@ -108,7 +108,8 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 #run:not(.withvideo) .vid{display:none}
 #run.withvideo .rname{font-size:24px;margin-bottom:6px}
 #run.withvideo .mid{display:flex;gap:12px;align-items:center}
-#run.withvideo .rstage{flex:0 0 52%;max-height:none;min-height:0}
+#run.withvideo .rstage{flex:0 0 52%;max-height:none;min-height:0;aspect-ratio:auto;align-self:stretch}
+#run.withvideo .mid{flex:1;min-height:120px}
 #run.withvideo .beat{font-size:84px}
 #run.withvideo .counter{flex:1;flex-direction:column;align-items:flex-end;margin-top:0}
 #run.withvideo .dots i{width:12px;height:12px}
@@ -143,12 +144,12 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .mini .mpic{flex:0 0 auto;height:70%;min-height:30px;max-height:44px;aspect-ratio:4/3;background:#fff;border-radius:6px;overflow:hidden;display:block}
 .mini b{font-size:13px;flex:1;line-height:1.15;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .mini em{font-style:normal;color:var(--accent);font-size:12px;font-weight:700}
-.breath{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#EAFBF2,#fff 70%)}
-.breath .core,.breath .ring{position:absolute;width:42%;aspect-ratio:1;border-radius:50%;animation:br 8s ease-in-out infinite}
-.breath .core{background:#5BD49A}
-.breath .ring{background:#5BD49A;opacity:.25;width:62%;animation-delay:.15s}
-@keyframes br{0%,100%{transform:scale(.55)}50%{transform:scale(1)}}
-.breath span{position:relative;font-weight:900;font-size:22px;color:#fff;letter-spacing:4px;animation:bt 8s infinite}
+.breath{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#EAFBF2,#fff 70%);container-type:size}
+.breath .core,.breath .ring{position:absolute;border-radius:50%;animation:br 8s ease-in-out infinite}
+.breath .core{width:min(68cqh,68cqw);height:min(68cqh,68cqw);background:#5BD49A}
+.breath .ring{width:min(92cqh,92cqw);height:min(92cqh,92cqw);background:#5BD49A;opacity:.22;animation-delay:.15s}
+@keyframes br{0%,100%{transform:scale(.72)}50%{transform:scale(1)}}
+.breath span{position:relative;font-weight:900;font-size:max(18px,min(13cqh,13cqw));color:#0B3A25;letter-spacing:.15em;animation:bt 8s infinite}
 .breath .bout{position:absolute;animation-delay:-4s}
 @keyframes bt{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
 .hhead{display:flex;align-items:center;justify-content:space-between}
