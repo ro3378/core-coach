@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>核心訓練 Core Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14161B; --panel:#1E2128; --line:#2D313A; --text:#F2F0EA; --mute:#9AA0AB;
+  --accent:#FF8A4C; --accent2:#FFC24C; --ok:#5BD49A; --card:#F3EFE6;
+  --l1:#5BD49A; --l2:#FFC24C; --l3:#FF6B5C;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans TC",system-ui,sans-serif}
+body{min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
+.sub{color:var(--mute);font-size:14px;margin:0 0 18px}
+.sec{font-size:13px;color:var(--mute);letter-spacing:2px;margin:26px 0 10px;font-weight:700}
+.course{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;display:block;width:100%;text-align:left}
+.course .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;color:#14161B}
+.course h3{margin:0;font-size:19px}
+.course .meta{color:var(--mute);font-size:13px;margin-left:auto}
+.thumbs{display:flex;gap:6px;overflow:hidden}
+.thumbs .t{flex:0 0 70px;height:32px;background:var(--card);border-radius:8px}
+.thumbs svg{width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12px;color:var(--mute);border:1px solid var(--line);border-radius:99px;padding:2px 9px}
+.settings{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:6px 16px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);gap:10px}
+.row:last-child{border-bottom:0}
+.seg{display:flex;background:#0F1115;border-radius:10px;padding:3px}
+.seg button{padding:6px 10px;border-radius:8px;font-size:13px;color:var(--mute)}
+.seg button.on{background:var(--accent);color:#14161B;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px;text-align:left}
+.ex .pic{background:var(--card);border-radius:10px;aspect-ratio:270/122}
+.ex .pic svg{width:100%;height:100%;display:block}
+.ex b{display:block;margin:6px 4px 0;font-size:15px}
+.ex small{display:block;margin:0 4px 2px;color:var(--mute);font-size:12px}
+/* detail / course pages */
+.back{color:var(--mute);font-size:15px;padding:6px 0;margin-bottom:6px}
+.list .item{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px;margin-bottom:8px;width:100%;text-align:left}
+.list .item .pic{flex:0 0 100px;height:45px;background:var(--card);border-radius:9px}
+.list .item svg{width:100%;height:100%;display:block}
+.list .item b{font-size:16px;display:block}
+.list .item small{color:var(--mute);font-size:13px}
+.list .num{margin-left:auto;color:var(--accent);font-weight:900;font-size:15px;white-space:nowrap;padding-right:6px}
+.big{display:block;width:100%;background:var(--accent);color:#14161B;font-weight:900;font-size:20px;border-radius:16px;padding:18px;margin-top:14px}
+.stage{background:var(--card);border-radius:18px;overflow:hidden}
+.stage svg{width:100%;display:block}
+.cues{margin:14px 0 0;padding:0;list-style:none}
+.cues li{padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);font-size:16px}
+.cues li:before{content:"";position:absolute;left:6px;top:17px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.yt{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:14px;border-radius:14px;border:1px solid var(--line);color:var(--text);text-decoration:none;font-weight:700}
+.yt i{width:26px;height:18px;background:#FF3B30;border-radius:5px;position:relative;display:inline-block}
+.yt i:after{content:"";position:absolute;left:10px;top:4px;border-left:8px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent}
+/* workout */
+#run{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:10}
+#run.show{display:flex}
+.rtop{display:flex;align-items:center;padding:12px 16px 6px;gap:10px}
+.rtop .prog{flex:1;display:flex;gap:4px}
+.rtop .prog span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.rtop .prog span.done{background:var(--accent)}
+.rtop .prog span.cur{background:var(--accent2)}
+.x{width:40px;height:40px;border-radius:12px;background:var(--panel);font-size:20px;color:var(--mute)}
+.rbody{flex:1;display:flex;flex-direction:column;padding:6px 16px 12px;max-width:560px;width:100%;margin:0 auto;min-height:0}
+.phase{font-size:14px;font-weight:700;letter-spacing:3px;color:var(--accent)}
+.rname{font-size:34px;font-weight:900;line-height:1.15;margin:2px 0 8px}
+.rname small{font-size:16px;color:var(--mute);font-weight:500;margin-left:6px}
+.rstage{background:var(--card);border-radius:20px;overflow:hidden;flex:0 1 auto;aspect-ratio:270/150;max-height:46vh;min-height:150px;justify-content:center;display:flex;align-items:center;position:relative}
+.rstage svg{width:100%;height:100%;display:block}
+.rstage .tag{position:absolute;left:12px;top:10px;background:#14161BCC;color:#fff;padding:4px 10px;border-radius:99px;font-size:13px;font-weight:700}
+.counter{display:flex;align-items:flex-end;justify-content:space-between;margin-top:12px;gap:12px}
+.beat{font-size:120px;line-height:.85;font-weight:900;font-variant-numeric:tabular-nums;color:var(--text);min-width:1.1ch}
+.beat.rest{color:var(--ok)}
+.cinfo{flex:1;text-align:right}
+.eight{font-size:22px;font-weight:900}
+.eight small{color:var(--mute);font-weight:500;font-size:15px}
+.dots{display:flex;gap:6px;justify-content:flex-end;margin:10px 0 8px}
+.dots i{width:18px;height:18px;border-radius:50%;background:var(--line);transition:transform .1s}
+.dots i.on{background:var(--accent)}
+.dots i.now{background:var(--accent2);transform:scale(1.25)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:12px}
+.bar div{height:100%;background:var(--accent);width:0}
+.next{display:flex;align-items:center;justify-content:space-between;color:var(--mute);font-size:15px;margin-top:10px}
+.next b{color:var(--text)}
+.ctrls{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px;margin-top:auto;padding-top:12px}
+.ctrls button{background:var(--panel);border-radius:16px;padding:16px 0;font-weight:700;font-size:16px}
+.ctrls .pp{background:var(--accent);color:#14161B;font-size:19px}
+.note{font-size:12px;color:var(--mute);text-align:center;margin-top:8px;min-height:16px}
+.done-screen{text-align:center;padding-top:40px}
+.done-screen .ico{font-size:80px}
+.vid{width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;margin-bottom:10px;flex:0 0 auto}
+.vid iframe,.vid>div{width:100%;height:100%;display:block}
+#run:not(.withvideo) .vid{display:none}
+#run.withvideo .rname{font-size:24px;margin-bottom:6px}
+#run.withvideo .mid{display:flex;gap:12px;align-items:center}
+#run.withvideo .rstage{flex:0 0 52%;max-height:none;min-height:0}
+#run.withvideo .beat{font-size:84px}
+#run.withvideo .counter{flex:1;flex-direction:column;align-items:flex-end;margin-top:0}
+#run.withvideo .dots i{width:12px;height:12px}
+#run.withvideo .dots{gap:4px;margin:6px 0}
+.pl{width:100%;background:#0F1115;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px;font:inherit;font-size:14px}
+.plrow{flex-direction:column;align-items:stretch}
+.plmsg{font-size:12px;color:var(--mute)}
+#ytpre{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0}
+@media (max-height:700px){.beat{font-size:88px}.rname{font-size:26px}}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+
+<div id="run">
+  <div class="rtop"><button class="x" id="quit" aria-label="結束">✕</button><div class="prog" id="prog"></div></div>
+  <div class="rbody">
+    <div class="vid" id="vidbox"><div id="yt"></div></div>
+    <div class="phase" id="phase">準備</div>
+    <div class="rname" id="rname"></div>
+    <div class="mid"><div class="rstage" id="rstage"><span class="tag" id="rtag" hidden></span></div>
+    <div class="counter">
+      <div class="beat" id="beat">5</div>
+      <div class="cinfo">
+        <div class="dots" id="dots"></div>
+        <div class="eight" id="eight"></div>
+      </div>
+    </div></div>
+    <div class="bar"><div id="barf"></div></div>
+    <div class="next" id="next"></div>
+    <div class="ctrls">
+      <button id="prev">⏮ 上一個</button>
+      <button class="pp" id="pause">暫停</button>
+      <button id="skip">跳過 ⏭</button>
+    </div>
+    <div class="note" id="note"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- Poses ---------- */
+const X=(b,o)=>Object.assign({},b,o);
+// supine base (head left)
+const SUP={H:[84,150],S:[108,155],P:[168,157],E1:[138,163],W1:[166,164],E2:[136,161],W2:[164,162]};
+const PLANK={H:[213,116],S:[190,122],P:[132,130],E1:[192,160],W1:[226,163],E2:[186,160],W2:[220,163],K1:[90,143],F1:[50,158],K2:[94,143],F2:[56,158]};
+const HIGH={H:[213,94],S:[190,100],P:[132,108],E1:[191,132],W1:[192,163],E2:[187,132],W2:[188,163],K1:[90,128],F1:[50,156],K2:[94,128],F2:[56,156]};
+const DB=X(SUP,{E1:[110,120],W1:[112,86],E2:[106,120],W2:[108,86],K1:[170,114],F1:[210,116],K2:[166,114],F2:[206,116]});
+const BR=X(SUP,{P:[166,157],K1:[194,125],F1:[214,163],K2:[190,125],F2:[210,163]});
+const BD={H:[209,98],S:[186,104],P:[128,108],E1:[187,134],W1:[188,163],E2:[183,134],W2:[184,163],K1:[128,150],F1:[88,160],K2:[132,150],F2:[92,160]};
+const SM={H:[210,150],S:[186,154],P:[128,156],E1:[220,160],W1:[254,162],E2:[218,158],W2:[252,160],K1:[86,160],F1:[46,162],K2:[88,158],F2:[48,160]};
+const LR=X(SUP,{K1:[212,160],F1:[254,162],K2:[210,158],F2:[252,160]});
+const FL=X(SUP,{H:[86,146],S:[108,153],K1:[210,145],F1:[250,130],K2:[210,153],F2:[252,148]});
+const CR={P:[168,157],K1:[200,124],F1:[220,163],K2:[196,124],F2:[216,163],S:[110,155],H:[86,150],E1:[98,132],W1:[82,142],E2:[96,134],W2:[80,143]};
+const MC=X(HIGH,{K1:[168,128],F1:[140,150]});
+
+const EX={
+ plank:{name:'前臂棒式',en:'Forearm Plank',lv:1,bpm:60,cycle:0,poses:[PLANK],
+  cues:['手肘在肩膀正下方','頭到腳跟成一直線','收緊腹部與臀部，不要塌腰','自然呼吸，不要憋氣'],yt:'前臂棒式 plank 正確姿勢'},
+ sideplank:{along:1,name:'側棒式',en:'Side Plank',lv:2,bpm:60,cycle:0,
+  poses:[{H:[88,118],S:[110,124],P:[168,140],E1:[112,160],W1:[140,164],E2:[140,108],W2:[166,128],K1:[211,152],F1:[252,163],K2:[210,146],F2:[252,156]}],
+  cues:['手肘在肩膀正下方','髖部抬高，身體成一直線','上方手輕放腰上','左右兩邊時間相同'],yt:'側棒式 side plank 教學'},
+ deadbug:{name:'死蟲式',en:'Dead Bug',lv:1,bpm:60,cycle:4,
+  poses:[DB,X(DB,{E1:[80,132],W1:[50,124],K2:[210,146],F2:[252,140]}),DB,X(DB,{E2:[80,130],W2:[50,122],K1:[210,146],F1:[252,140]})],
+  cues:['下背全程貼緊地面','對側手腳同時伸出','動作放慢、控制好','伸展時吐氣'],yt:'死蟲式 dead bug 教學'},
+ bridge:{name:'臀橋',en:'Glute Bridge',lv:1,bpm:60,cycle:4,
+  poses:[BR,X(BR,{P:[164,126],K1:[207,120],K2:[203,120]})],
+  cues:['雙腳與髖同寬踩地','用臀部把髖部推高','頂端停一下、夾緊臀部','下放時慢慢控制'],yt:'臀橋 glute bridge 教學'},
+ birddog:{along:1,name:'鳥狗式',en:'Bird Dog',lv:1,bpm:60,cycle:8,
+  poses:[BD,X(BD,{E1:[220,98],W1:[254,94],K2:[86,104],F2:[46,100]}),BD,X(BD,{E2:[218,100],W2:[252,96],K1:[86,106],F1:[46,102]})],
+  cues:['手在肩下、膝在髖下','對側手腳同時伸直','背部平穩，不要旋轉','眼睛看地板，頸部放鬆'],yt:'鳥狗式 bird dog 教學'},
+ superman:{along:1,name:'超人式',en:'Superman',lv:2,bpm:60,cycle:4,
+  poses:[SM,X(SM,{S:[186,150],H:[211,140],E1:[219,140],W1:[252,128],E2:[217,138],W2:[250,126],K1:[86,152],F1:[46,140],K2:[88,150],F2:[48,138]})],
+  cues:['俯臥，手臂往前伸直','手臂與雙腳同時抬離地面','用背部與臀部發力','頸部保持中立、看地板'],yt:'超人式 superman exercise 教學'},
+ climber:{name:'登山者',en:'Mountain Climber',lv:3,bpm:100,cycle:2,
+  poses:[MC,X(HIGH,{K2:[168,128],F2:[140,150]})],
+  cues:['高棒式起始，手在肩下','膝蓋輪流往胸口帶','臀部不要翹高','跟著拍子保持節奏'],yt:'登山者 mountain climber 教學'},
+ tap:{name:'棒式肩觸',en:'Plank Shoulder Tap',lv:2,bpm:60,cycle:4,
+  poses:[HIGH,X(HIGH,{E1:[206,118],W1:[194,104]}),HIGH,X(HIGH,{E2:[204,118],W2:[192,104]})],
+  cues:['高棒式，雙腳略打開更穩','單手輕觸對側肩膀','髖部盡量不晃動','左右交替'],yt:'棒式肩觸 plank shoulder tap 教學'},
+ legraise:{along:1,name:'仰臥抬腿',en:'Lying Leg Raise',lv:3,bpm:60,cycle:4,
+  poses:[LR,X(LR,{K1:[172,114],F1:[176,72],K2:[168,114],F2:[172,72]})],
+  cues:['下背貼地，手放身體兩側','雙腿併攏伸直往上抬','下放時腳跟不碰地','慢慢控制，不甩腿'],yt:'仰臥抬腿 leg raise 教學'},
+ flutter:{along:1,name:'剪刀腿',en:'Flutter Kicks',lv:2,bpm:80,cycle:2,
+  poses:[FL,X(FL,{K1:[210,153],F1:[252,148],K2:[210,145],F2:[250,130]})],
+  cues:['下背貼地','雙腿離地小幅上下交替','腹部持續出力','頭肩可微微抬起'],yt:'剪刀腿 flutter kicks 教學'},
+ crunch:{name:'捲腹',en:'Crunch',lv:2,bpm:50,cycle:2,
+  poses:[CR,X(CR,{S:[123,131],H:[102,119],E1:[118,104],W1:[96,112],E2:[116,106],W2:[94,114]})],
+  cues:['屈膝，雙腳踩地','手輕扶頭後，不拉脖子','用腹部把上背捲起','上來吐氣、下去吸氣'],yt:'捲腹 crunch 正確姿勢'},
+ hollow:{along:1,name:'空心支撐',en:'Hollow Body Hold',lv:3,bpm:60,cycle:0,
+  poses:[{P:[160,152],S:[112,140],H:[90,130],E1:[82,126],W1:[52,116],E2:[84,124],W2:[54,114],K1:[204,144],F1:[246,132],K2:[203,141],F2:[245,129]}],
+  cues:['下背壓緊地面','手腳伸直並離地','身體呈淺淺的香蕉形','太難可先屈膝'],yt:'空心支撐 hollow body hold 教學'}
+};
+const LV={1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)']};
+const COURSES=[
+ {id:'c1',lv:1,name:'核心入門',desc:'每天 3 分鐘，建立核心穩定',rest:15,
+  items:[['bridge',4],['deadbug',4],['birddog',4],['plank',4]]},
+ {id:'c2',lv:2,name:'核心強化',desc:'腹肌＋側腹＋下背全面加強',rest:15,
+  items:[['crunch',4],['flutter',4],['sideplank',4,'L'],['sideplank',4,'R'],['tap',4],['superman',4]]},
+ {id:'c3',lv:3,name:'核心挑戰',desc:'高強度，含動態與長時間支撐',rest:10,
+  items:[['climber',8],['legraise',4],['hollow',4],['tap',6],['flutter',6],['plank',8],['sideplank',4,'L'],['sideplank',4,'R']]}
+];
+
+/* ---------- Settings ---------- */
+let S={speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
+try{Object.assign(S,JSON.parse(localStorage.getItem('core-set')||'{}'))}catch(e){}
+const saveS=()=>{try{localStorage.setItem('core-set',JSON.stringify(S))}catch(e){}};
+
+/* ---------- Figure ---------- */
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+function poseAt(ex,beatF){
+  const ps=ex.poses; if(ps.length<2||!ex.cycle) return ps[0];
+  const n=ps.length, ph=((beatF%ex.cycle)+ex.cycle)%ex.cycle/ex.cycle*n;
+  const i=Math.floor(ph), f=ph-i, t=f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2;
+  const a=X(ps[0],ps[i]), b=X(ps[0],ps[(i+1)%n]), o={};
+  for(const k in a) o[k]=lerp(a[k],b[k]||a[k],t);
+  return o;
+}
+const pt=p=>p[0].toFixed(1)+' '+p[1].toFixed(1);
+const unit=(a,b)=>{const x=b[0]-a[0],y=b[1]-a[1],d=Math.hypot(x,y)||1;return [x/d,y/d]};
+const add=(a,v,k)=>[a[0]+v[0]*k,a[1]+v[1]*k];
+function cap(a,b,ra,rb){
+  const dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy)||.01,th=Math.atan2(dy,dx);
+  const al=Math.acos(Math.max(-1,Math.min(1,(ra-rb)/d))),P=[],N=10;
+  for(let i=0;i<=N;i++){const t=th+al+(2*Math.PI-2*al)*i/N;P.push([a[0]+ra*Math.cos(t),a[1]+ra*Math.sin(t)])}
+  for(let i=0;i<=N;i++){const t=th-al+2*al*i/N;P.push([b[0]+rb*Math.cos(t),b[1]+rb*Math.sin(t)])}
+  return 'M'+P.map(pt).join('L')+'Z';
+}
+function group(ds,fill,O){
+  return ds.map(d=>`<path d="${d}" fill="${O}" stroke="${O}" stroke-width="5" stroke-linejoin="round"/>`).join('')+ds.map(d=>`<path d="${d}" fill="${fill}"/>`).join('');
+}
+function armShapes(p,S,E,W){
+  const fwd=[Math.sign(p.H[0]-p.P[0])||1,0];
+  const hd=W[1]>157?fwd:unit(E,W);
+  return [cap(S,E,7.6,5.2),cap(E,W,5.6,3.9),cap(add(W,hd,1),add(W,hd,9),4.4,3.6)];
+}
+function legShapes(P,K,F,along){
+  const sd=unit(K,F),fd=along?sd:[sd[1],-sd[0]],M=lerp(K,F,.33);
+  return [cap(P,K,10.5,6.6),cap(K,M,6.4,7.4),cap(M,F,7.4,4.2),cap(add(F,fd,-2.5),add(F,fd,along?10:12),4.6,3.2)];
+}
+function figure(p,mirror,along){
+  const O='#2B2F36',N='#FFFFFF',F='#C6CDD7';
+  let s=`<svg viewBox="15 58 270 122" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><g${mirror?' transform="translate(300 0) scale(-1 1)"':''}>`;
+  s+=`<line x1="14" y1="172" x2="286" y2="172" stroke="#D3CCBD" stroke-width="3" stroke-linecap="round"/>`;
+  s+=group(armShapes(p,p.S,p.E2,p.W2),F,O);
+  s+=group(legShapes(p.P,p.K2,p.F2,along),F,O);
+  const Wst=lerp(p.S,p.P,.56),hd=unit(p.S,p.H);
+  s+=group([cap(lerp(p.S,p.H,.3),lerp(p.S,p.H,.75),5.6,5.2),cap(p.S,Wst,15,11.2),cap(Wst,p.P,11.2,13.8),cap(add(p.H,hd,-2),add(p.H,hd,3),12.5,11.5)],N,O);
+  s+=`<path d="${cap(lerp(p.S,p.P,.4),lerp(p.S,p.P,.92),10.5,10.5)}" fill="#FF8A4C" fill-opacity=".45"/>`;
+  s+=group(legShapes(p.P,p.K1,p.F1,along),N,O);
+  s+=group(armShapes(p,p.S,p.E1,p.W1),N,O);
+  return s+'</g></svg>';
+}
+const still=(id,side)=>figure(EX[id].poses[EX[id].poses.length>1?1:0],side==='R',EX[id].along);
+
+/* ---------- Helpers ---------- */
+const $=s=>document.querySelector(s);
+const secOf=(id,e)=>e*8*60/(EX[id].bpm*S.speed);
+const restOf=c=>S.rest||c.rest;
+const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const courseSec=c=>c.items.reduce((a,[id,e])=>a+secOf(id,e),0)+restOf(c)*(c.items.length-1);
+const sideTxt=s=>s==='L'?'（左側）':s==='R'?'（右側）':'';
+const ZH=['零','一','二','三','四','五','六','七','八','九','十'];
+
+/* ---------- Views ---------- */
+let previewRAF=null;
+function stopPreview(){cancelAnimationFrame(previewRAF);previewRAF=null}
+function animate(el,ex,mirror){
+  stopPreview();const t0=performance.now();
+  const loop=now=>{el.innerHTML=figure(poseAt(ex,(now-t0)/(60000/(ex.bpm*S.speed))),mirror,ex.along);previewRAF=requestAnimationFrame(loop)};
+  previewRAF=requestAnimationFrame(loop);
+}
+function segCtl(key,opts){
+  return `<div class="seg" data-k="${key}">${opts.map(([v,l])=>`<button data-v="${v}" class="${S[key]===v?'on':''}">${l}</button>`).join('')}</div>`;
+}
+function home(){
+  stopPreview();
+  $('#app').innerHTML=`
+  <h1>核心訓練</h1><p class="sub">開始後不用碰手機：跟著拍子做，時間到自動換下一個動作</p>
+  <div class="sec">課程</div>
+  ${COURSES.map(c=>`<button class="course" data-c="${c.id}">
+    <div class="top"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h3>${c.name}</h3><span class="meta">${c.items.length} 個動作・${fmt(courseSec(c))}</span></div>
+    <div class="thumbs">${c.items.map(([id,,sd])=>`<div class="t">${still(id,sd)}</div>`).join('')}</div>
+    <div class="chips">${c.items.map(([id,e,sd])=>`<span class="chip">${EX[id].name}${sd?sd==='L'?'·左':'·右':''} ${e}×8</span>`).join('')}</div>
+  </button>`).join('')}
+  <div class="sec">設定</div>
+  <div class="settings">
+    <div class="row"><span>節奏速度</span>${segCtl('speed',[[0.75,'慢'],[1,'標準'],[1.25,'快']])}</div>
+    <div class="row"><span>休息時間</span>${segCtl('rest',[[0,'預設'],[10,'10秒'],[20,'20秒'],[30,'30秒']])}</div>
+    <div class="row"><span>語音提示</span>${segCtl('voice',[[true,'開'],[false,'關']])}</div>
+    <div class="row"><span>拍子音效</span>${segCtl('click',[[true,'開'],[false,'關']])}</div>
+  </div>
+  <div class="sec">邊看影片邊訓練</div>
+  <div class="settings">
+    <div class="row plrow"><span>YouTube 播放清單或影片網址</span>
+      <input class="pl" id="plin" placeholder="貼上 youtube.com/playlist?list=… 或影片網址" value="${S.pl.replace(/"/g,'&quot;')}">
+      <span class="plmsg" id="plmsg">${plStatus()}</span></div>
+    <div class="row"><span>隨機播放</span>${segCtl('shuffle',[[true,'開'],[false,'關']])}</div>
+    <div class="row"><span>暫停訓練時影片也暫停</span>${segCtl('vpause',[[true,'是'],[false,'否']])}</div>
+  </div>
+  <div class="sec">動作庫</div>
+  <div class="grid">${Object.keys(EX).map(id=>`<button class="ex" data-x="${id}"><div class="pic">${still(id)}</div><b>${EX[id].name}</b><small>${LV[EX[id].lv][0]}・${EX[id].en}</small></button>`).join('')}</div>`;
+  scrollTo(0,0);
+}
+function courseView(c){
+  stopPreview();
+  $('#app').innerHTML=`<button class="back" data-home>‹ 返回</button>
+  <span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
+  <h1>${c.name}</h1><p class="sub">${c.desc}・約 ${fmt(courseSec(c))}・每個動作間休息 ${restOf(c)} 秒</p>
+  <div class="list">${c.items.map(([id,e,sd])=>`<button class="item" data-x="${id}" data-side="${sd||''}"><div class="pic">${still(id,sd)}</div><div><b>${EX[id].name}${sideTxt(sd)}</b><small>${EX[id].en}・約 ${Math.round(secOf(id,e))} 秒</small></div><span class="num">${e} 個八拍</span></button>`).join('')}</div>
+  <button class="big" data-start="${c.id}">▶ 開始訓練</button>
+  <p class="note">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p>`;
+  scrollTo(0,0);
+}
+function exView(id,side,from){
+  const ex=EX[id];
+  $('#app').innerHTML=`<button class="back" data-${from?'c="'+from+'"':'home'}>‹ 返回</button>
+  <span class="badge" style="background:${LV[ex.lv][1]}">${LV[ex.lv][0]}</span>
+  <h1>${ex.name}${sideTxt(side)}</h1><p class="sub">${ex.en}・建議節奏 ${ex.bpm} 拍/分鐘${ex.cycle?'':'（靜態支撐）'}</p>
+  <div class="stage" id="stage"></div>
+  <ul class="cues">${ex.cues.map(c=>`<li>${c}</li>`).join('')}</ul>
+  <a class="yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener"><i></i>在 YouTube 看教學影片</a>`;
+  animate($('#stage'),ex,side==='R');
+  scrollTo(0,0);
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button,[data-k]'); if(!b) return;
+  const sg=e.target.closest('.seg');
+  if(sg&&e.target.dataset.v!==undefined){
+    const k=sg.dataset.k, raw=e.target.dataset.v;
+    S[k]=raw==='true'?true:raw==='false'?false:Number(raw); saveS(); home();
+    scrollTo(0,document.body.scrollHeight); return;
+  }
+  if(b.dataset.c!==undefined&&b.classList.contains('course')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
+  if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c)); }
+  if(b.dataset.x){ const cur=COURSES.find(c=>$('[data-start="'+c.id+'"]')); return exView(b.dataset.x,b.dataset.side,cur&&cur.id); }
+  if(b.dataset.start) return startCourse(COURSES.find(c=>c.id===b.dataset.start));
+});
+
+/* ---------- Audio & voice ---------- */
+let AC=null;
+function tone(f,d,v=.25,type='sine'){
+  if(!AC) return; const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime;
+  o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.02);
+}
+const click=acc=>{if(S.click) tone(acc?1320:880,.07,acc?.35:.2,'square')};
+const chime=()=>{tone(784,.25,.3);setTimeout(()=>tone(1046,.4,.3),160)};
+let zhVoice=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();zhVoice=vs.find(v=>/zh[-_]TW/i.test(v.lang))||vs.find(v=>/zh/i.test(v.lang))||null}catch(e){}}
+try{speechSynthesis.onvoiceschanged=pickVoice;pickVoice()}catch(e){}
+function say(t){
+  if(!S.voice) return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='zh-TW';if(zhVoice)u.voice=zhVoice;u.rate=1.05;speechSynthesis.speak(u)}catch(e){}
+}
+
+/* ---------- Wake lock ---------- */
+let wl=null;
+async function lockScreen(){
+  try{wl=await navigator.wakeLock.request('screen');$('#note').textContent=''}
+  catch(e){$('#note').textContent='提醒：此裝置無法自動保持螢幕常亮，請先把自動鎖定時間調長'}
+}
+document.addEventListener('visibilitychange',()=>{if(R&&document.visibilityState==='visible')lockScreen()});
+
+/* ---------- YouTube ---------- */
+function parseYT(u){
+  u=(u||'').trim(); if(!u) return null;
+  const list=(u.match(/[?&]list=([\w-]+)/)||[])[1];
+  const v=(u.match(/(?:[?&]v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/)||[])[1]||(/^[\w-]{11}$/.test(u)?u:null);
+  if(list) return {list,v};
+  if(v) return {v};
+  return {bad:true};
+}
+function plStatus(){const p=parseYT(S.pl);return !p?'不填就只播拍子和語音':p.bad?'⚠️ 看不懂這個網址，請貼 YouTube 播放清單或影片連結':p.list?'✓ 播放清單已設定，按開始訓練就會一起播放':'✓ 影片已設定，按開始訓練就會一起播放'}
+let YTP=null,ytReady=false,ytKey='';
+window.onYouTubeIframeAPIReady=()=>{ytReady=true;buildPlayer()};
+function buildPlayer(){
+  const p=parseYT(S.pl);
+  if(!ytReady||!p||p.bad){return}
+  const key=JSON.stringify(p); if(YTP&&key===ytKey) return;
+  ytKey=key;
+  try{YTP&&YTP.destroy()}catch(e){}
+  if(!document.getElementById('yt')){const d=document.createElement('div');d.id='yt';$('#vidbox').appendChild(d)}
+  const pv={playsinline:1,rel:0,modestbranding:1,origin:location.origin};
+  if(p.list){pv.listType='playlist';pv.list=p.list}
+  YTP=new YT.Player('yt',{width:'100%',height:'100%',videoId:p.v||undefined,playerVars:pv,
+    events:{onReady:()=>{try{if(p.list&&S.shuffle)YTP.setShuffle(true)}catch(e){}}}});
+}
+(function(){const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)})();
+document.addEventListener('change',e=>{if(e.target.id==='plin'){S.pl=e.target.value;saveS();$('#plmsg').textContent=plStatus();buildPlayer()}});
+document.addEventListener('input',e=>{if(e.target.id==='plin'){$('#plmsg').textContent=(()=>{const p=parseYT(e.target.value);return !p?'':p.bad?'⚠️ 看不懂這個網址':'✓ 看起來可以，離開輸入框即儲存'})()}});
+function ytFrame(){return YTP&&YTP.getIframe&&YTP.getIframe()}
+function videoOn(){
+  const f=ytFrame(); if(!f) return false;
+  try{if(S.shuffle&&YTP.setShuffle)YTP.setShuffle(true);YTP.playVideo()}catch(e){}
+  return true;
+}
+function videoOff(){try{YTP&&YTP.pauseVideo()}catch(e){}}
+
+/* ---------- Runner ---------- */
+let R=null;
+function startCourse(c){
+  stopPreview();
+  try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}
+  try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}
+  const q=c.items.map(([id,e,sd])=>({id,e,sd}));
+  R={c,q,i:0,phase:'prep',dur:5,t0:performance.now(),paused:false,pAt:0,last:-1};
+  $('#run').classList.add('show');$('#run').classList.toggle('withvideo',videoOn()); document.body.style.overflow='hidden';
+  $('#prog').innerHTML=q.map(()=>'<span></span>').join('');
+  lockScreen();
+  enter('prep');
+  R.raf=requestAnimationFrame(frame);
+}
+function cur(){return R.q[R.i]}
+function beatMs(it){return 60000/(EX[it.id].bpm*S.speed)}
+function enter(ph){
+  R.phase=ph;R.t0=performance.now();R.last=-1;
+  const it=cur(),ex=EX[it.id],nm=ex.name+sideTxt(it.sd);
+  if(ph==='prep'){R.dur=5;say('準備。第一個動作，'+nm)}
+  if(ph==='rest'){R.dur=restOf(R.c);chime();say('時間到，休息。下一個，'+nm)}
+  if(ph==='work'){R.dur=it.e*8*beatMs(it)/1000;say('開始')}
+  $('#dots').innerHTML='<i></i>'.repeat(8);
+  [...$('#prog').children].forEach((s,k)=>s.className=k<R.i?'done':k===R.i?'cur':'');
+  $('#phase').textContent=ph==='work'?`第 ${R.i+1} / ${R.q.length} 個動作`:ph==='rest'?'休息・下一個動作':'準備開始';
+  $('#phase').style.color=ph==='work'?'var(--accent)':'var(--ok)';
+  $('#rname').innerHTML=nm+`<small>${ex.en}</small>`;
+  $('#rtag').hidden=ph==='work';$('#rtag').textContent='下一個';
+  const nx=R.q[R.i+1];
+  $('#next').innerHTML=ph==='work'?(nx?`<span>下一個：<b>${EX[nx.id].name}${sideTxt(nx.sd)}</b></span>`:'<b>最後一個動作！</b>')+`<span>${it.e} 個八拍</span>`:`<span>${ex.cues[0]}</span>`;
+}
+function advance(){
+  if(R.phase==='prep'||R.phase==='rest') return enter('work');
+  if(R.i<R.q.length-1){R.i++;return enter('rest')}
+  finish();
+}
+function frame(now){
+  if(!R) return;
+  const it=cur(),ex=EX[it.id];
+  const el=R.paused?R.pAt-R.t0:now-R.t0;
+  const st=$('#rstage');
+  let svgPose,beatF;
+  if(R.phase==='work'){
+    const bm=beatMs(it),total=it.e*8;
+    beatF=el/bm;const b=Math.floor(beatF);
+    if(b!==R.last&&b<total&&!R.paused){
+      R.last=b;const n=b%8+1,eight=Math.floor(b/8)+1;
+      click(n===1);
+      if(n===1&&b>0) say(eight===it.e?'最後一個八拍':'第'+ZH[eight]+'個八拍');
+      $('#beat').textContent=n;$('#beat').className='beat';
+      [...$('#dots').children].forEach((d,k)=>d.className=k<n-1?'on':k===n-1?'now':'');
+      $('#eight').innerHTML=`第 ${eight} <small>/ ${it.e} 個八拍</small>`;
+    }
+    $('#barf').style.width=Math.min(100,el/(total*bm)*100)+'%';
+    if(el>=total*bm&&!R.paused) advance();
+  }else{
+    const left=Math.ceil(R.dur-el/1000);
+    if(left!==R.last&&!R.paused){
+      R.last=left;$('#beat').textContent=Math.max(left,0);$('#beat').className='beat rest';
+      $('#eight').innerHTML=`<small>秒後開始</small>`;
+      if(left<=3&&left>0) tone(660,.12,.3);
+    }
+    $('#barf').style.width=Math.min(100,el/(R.dur*1000)*100)+'%';
+    beatF=el/beatMs(it)*.6;
+    if(el>=R.dur*1000&&!R.paused) advance();
+  }
+  if(R&&R.phase!==undefined){
+    st.querySelector('svg')?.remove();
+    st.insertAdjacentHTML('afterbegin',figure(poseAt(EX[cur().id],beatF),cur().sd==='R',EX[cur().id].along));
+  }
+  if(R) R.raf=requestAnimationFrame(frame);
+}
+function togglePause(){
+  if(!R) return;
+  if(!R.paused){R.paused=true;R.pAt=performance.now();$('#pause').textContent='▶ 繼續';try{speechSynthesis.cancel()}catch(e){};if(S.vpause)try{YTP&&YTP.pauseVideo()}catch(e){}}
+  else{R.t0+=performance.now()-R.pAt;R.paused=false;$('#pause').textContent='暫停';if(S.vpause)try{YTP&&YTP.playVideo()}catch(e){}}
+}
+$('#pause').onclick=togglePause;
+$('#skip').onclick=()=>{if(!R)return;if(R.paused)togglePause();advance()};
+$('#prev').onclick=()=>{if(!R)return;if(R.paused)togglePause();if(R.phase==='work'&&performance.now()-R.t0>2000)return enter('work');if(R.i>0)R.i--;enter('work')};
+$('#quit').onclick=()=>endRun(true);
+function finish(){
+  chime();say('完成！辛苦了');
+  const c=R.c;endRun(false);
+  $('#app').innerHTML=`<div class="done-screen"><div class="ico">🎉</div><h1>完成 ${c.name}</h1><p class="sub">${c.items.length} 個動作・約 ${fmt(courseSec(c))}</p>
+  <button class="big" data-start="${c.id}">再來一次</button><button class="big" style="background:var(--panel);color:var(--text)" data-home>回首頁</button></div>`;
+  document.querySelectorAll('[data-home]').forEach(b=>b.classList.add('back'));
+  document.querySelector('.done-screen [data-home]').classList.remove('back');
+  document.querySelector('.done-screen [data-home]').onclick=home;
+}
+function endRun(goBack){
+  if(!R) return;cancelAnimationFrame(R.raf);const c=R.c;R=null;
+  try{speechSynthesis.cancel()}catch(e){}
+  try{wl&&wl.release()}catch(e){};wl=null;
+  videoOff();$('#run').classList.remove('show');document.body.style.overflow='';
+  if(goBack) courseView(c);
+}
+home();
+</script>
+</body>
+</html>
