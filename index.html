@@ -110,6 +110,30 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .plmsg{font-size:12px;color:var(--mute)}
 #ytwrap{position:fixed;left:-10000px;top:0;width:320px;height:180px;z-index:20;border-radius:16px;overflow:hidden;background:#000}
 #ytwrap iframe{width:100%;height:100%;display:block;border:0}
+.ccard{display:flex;align-items:stretch;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:8px;margin-bottom:10px}
+.cbody{flex:1;display:flex;align-items:center;gap:10px;text-align:left;padding:6px}
+.ctext b{display:block;font-size:18px}.ctext small{color:var(--mute);font-size:13px}
+.go{background:var(--accent);color:#14161B;font-weight:900;border-radius:12px;padding:0 18px;font-size:16px;white-space:nowrap}
+.fold{background:var(--panel);border:1px solid var(--line);border-radius:16px;margin-top:12px;padding:0 14px}
+.fold summary{list-style:none;cursor:pointer;padding:14px 0;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary span{color:var(--mute);font-weight:400;font-size:13px}
+.fold summary:after{content:"▾";color:var(--mute);margin-left:8px}
+.fold[open] summary:after{content:"▴"}
+.fold .settings{border:0;padding:0;background:none}
+.fold .grid{padding-bottom:14px}
+.chead{display:flex;align-items:center;gap:10px}.chead h1{margin:0}
+.ctarow{display:flex;gap:10px;margin:4px 0 6px}
+.ctarow .big{margin:0;flex:1}
+.reroll{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:0 14px;font-size:22px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.reroll small{font-size:11px;color:var(--mute)}
+.mini{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
+.mini li{min-width:0}
+.mini button{width:100%;display:flex;align-items:center;gap:6px;background:var(--panel);border-radius:10px;padding:5px 8px 5px 5px;text-align:left}
+.mini i{font-style:normal;color:var(--mute);font-size:12px;width:16px;text-align:center}
+.mini .mpic{flex:0 0 40px;height:30px;background:#fff;border-radius:6px;overflow:hidden;display:block}
+.mini b{font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini em{font-style:normal;color:var(--accent);font-size:12px;font-weight:700}
 @media (max-height:700px){.beat{font-size:88px}.rname{font-size:26px}}
 </style>
 </head>
@@ -217,45 +241,45 @@ function segCtl(key,opts){
   return `<div class="seg" data-k="${key}">${opts.map(([v,l])=>`<button data-v="${v}" class="${S[key]===v?'on':''}">${l}</button>`).join('')}</div>`;
 }
 let VIEW='home',homeY=0,courseY=0;
+let FOLD={set:false,lib:false};
 function home(){
   VIEW='home';
   stopPreview();
   $('#app').innerHTML=`
-  <h1>核心訓練</h1><p class="sub">開始後不用碰手機：跟著拍子做，時間到自動換下一個動作</p>
-  <div class="sec">課程</div>
-  ${COURSES.map(c=>`<button class="course" data-c="${c.id}">
-    <div class="top"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h3>${c.name}</h3><span class="meta">${c.random?'約 15 分鐘・隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</span></div>
-    <div class="thumbs">${(c.random?c.pool:c.items.map(x=>x[0])).map(id=>`<div class="t">${still(id)}</div>`).join('')}</div>
-    <div class="chips">${c.random?c.pool.map(id=>`<span class="chip">${EX[id].name}</span>`).join('')+`<span class="chip">每個 ${c.eights}×8</span>`:c.items.map(([id,e])=>`<span class="chip">${EX[id].name} ${e}×8</span>`).join('')}</div>
-  </button>`).join('')}
-  <div class="sec">設定</div>
+  <h1>核心訓練</h1><p class="sub">按開始就不用再碰手機</p>
+  ${COURSES.map(c=>`<div class="ccard">
+    <button class="cbody" data-c="${c.id}"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
+      <span class="ctext"><b>${c.name}</b><small>${c.random?'約 15 分鐘・每次隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</small></span></button>
+    <button class="go" data-go="${c.id}">▶ 開始</button>
+  </div>`).join('')}
+  <details class="fold" data-fold="set"${FOLD.set?' open':''}><summary>設定・邊看影片邊訓練<span>${S.speed===1?'標準':S.speed<1?'慢':'快'}速・${parseYT(S.pl)&&!parseYT(S.pl).bad?'已設影片':'無影片'}</span></summary>
   <div class="settings">
     <div class="row"><span>節奏速度</span>${segCtl('speed',[[0.75,'慢'],[1,'標準'],[1.25,'快']])}</div>
     <div class="row"><span>休息時間</span>${segCtl('rest',[[0,'預設'],[10,'10秒'],[20,'20秒'],[30,'30秒']])}</div>
     <div class="row"><span>語音提示</span>${segCtl('voice',[[true,'開'],[false,'關']])}</div>
     <div class="row"><span>拍子音效</span>${segCtl('click',[[true,'開'],[false,'關']])}</div>
-  </div>
-  <div class="sec">邊看影片邊訓練</div>
-  <div class="settings">
     <div class="row plrow"><span>YouTube 播放清單或影片網址</span>
       <input class="pl" id="plin" placeholder="貼上 youtube.com/playlist?list=… 或影片網址" value="${S.pl.replace(/"/g,'&quot;')}">
       <span class="plmsg" id="plmsg">${plStatus()}</span></div>
-    <div class="row"><span>隨機播放</span>${segCtl('shuffle',[[true,'開'],[false,'關']])}</div>
+    <div class="row"><span>影片隨機播放</span>${segCtl('shuffle',[[true,'開'],[false,'關']])}</div>
     <div class="row"><span>暫停訓練時影片也暫停</span>${segCtl('vpause',[[true,'是'],[false,'否']])}</div>
-  </div>
-  <div class="sec">動作庫</div>
-  <div class="grid">${Object.keys(EX).map(id=>`<button class="ex" data-x="${id}"><div class="pic">${still(id)}</div><b>${EX[id].name}</b><small>${LV[EX[id].lv][0]}・${EX[id].en}</small></button>`).join('')}</div>`;
-  hydrate();scrollTo(0,homeY);
+  </div></details>
+  <details class="fold" data-fold="lib"${FOLD.lib?' open':''}><summary>動作庫<span>${Object.keys(EX).length} 個動作</span></summary>
+  <div class="grid">${Object.keys(EX).map(id=>`<button class="ex" data-x="${id}"><div class="pic">${still(id)}</div><b>${EX[id].name}</b><small>${LV[EX[id].lv][0]}・${EX[id].en}</small></button>`).join('')}</div></details>`;
+  if(FOLD.lib) hydrate();
+  scrollTo(0,homeY);
 }
+document.addEventListener('toggle',e=>{const d=e.target;if(!d.dataset||!d.dataset.fold)return;FOLD[d.dataset.fold]=d.open;if(d.open&&d.dataset.fold==='lib')d.querySelectorAll('.lt[data-lt]').forEach(el=>{if(!el.firstChild)mountLottie(el,el.dataset.lt,false)})},true);
 function courseView(c,keep,stay){
   const y0=scrollY;VIEW='course';
   if(c.random&&!keep){c.items=buildQueue(c);c._ran=false}
   stopPreview();
   $('#app').innerHTML=`<button class="back" data-home>‹ 返回</button>
-  <span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
-  <h1>${c.name}</h1><p class="sub">${c.desc}・本次 ${c.items.length} 個動作・約 ${fmt(courseSec(c))}・每個動作間休息 ${restOf(c)} 秒</p>${c.random?'<button class="yt" data-reroll="'+c.id+'" style="width:100%;margin:0 0 12px">🔀 重新隨機排列</button>':''}
-  <div class="list">${c.items.map(([id,e,sd])=>`<button class="item" data-x="${id}" data-side="${sd||''}"><div class="pic">${still(id)}</div><div><b>${EX[id].name}</b><small>${EX[id].en}・約 ${Math.round(secOf(id,e))} 秒</small></div><span class="num">${e} 個八拍</span></button>`).join('')}</div>
-  <button class="big" data-start="${c.id}">▶ 開始訓練</button>
+  <div class="chead"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h1>${c.name}</h1></div>
+  <p class="sub">${c.items.length} 個動作・約 ${fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
+  <div class="ctarow"><button class="big" data-start="${c.id}">▶ 開始訓練</button>${c.random?`<button class="reroll" data-reroll="${c.id}" aria-label="重新隨機排列">🔀<small>換順序</small></button>`:''}</div>
+  <div class="sec">${c.random?'本次順序':'動作順序'}</div>
+  <ol class="mini">${c.items.map(([id,e],k)=>`<li><button data-x="${id}"><i>${k+1}</i><span class="mpic">${still(id)}</span><b>${EX[id].name}</b><em>${e}×8</em></button></li>`).join('')}</ol>
   <p class="note">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p>`;
   hydrate();scrollTo(0,stay?y0:keep?courseY:0);
 }
@@ -280,9 +304,10 @@ document.addEventListener('click',e=>{
     S[k]=raw==='true'?true:raw==='false'?false:Number(raw); saveS();
     homeY=scrollY; home(); return;
   }
-  if(b.dataset.c!==undefined&&b.classList.contains('course')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
+  if(b.dataset.c!==undefined&&b.classList.contains('cbody')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
   if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c),true); }
   if(b.dataset.x){ const cur=COURSES.find(c=>$('[data-start="'+c.id+'"]')); return exView(b.dataset.x,b.dataset.side,cur&&cur.id); }
+  if(b.dataset.go){const c=COURSES.find(x=>x.id===b.dataset.go);if(c.random){c.items=buildQueue(c);c._ran=false}return startCourse(c)}
   if(b.dataset.reroll) return courseView(COURSES.find(c=>c.id===b.dataset.reroll),false,true);
   if(b.dataset.start) return startCourse(COURSES.find(c=>c.id===b.dataset.start));
 });
