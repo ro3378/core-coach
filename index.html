@@ -159,16 +159,31 @@ const EX={
  planklunge:{name:'棒式弓箭步',en:'Plank Lunges',lv:3,bpm:50,cues:['高棒式起始','單腳跨到同側手旁邊','回到棒式再換腳','核心穩住、臀部不翹'],yt:'plank lunges 教學'}
 };
 const LV={0:['全部','var(--accent)'],1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)']};
+const TARGET=15*60;
 const COURSES=[
- {id:'c1',lv:1,name:'核心入門',desc:'每天 3 分鐘，建立核心穩定',rest:15,
-  items:[['bridge',4],['situp',4],['bridgemarch',4],['plank',4]]},
- {id:'c2',lv:2,name:'核心強化',desc:'腹肌＋側腹＋臀部全面加強',rest:15,
-  items:[['hipraise',4],['elbowknee',4],['bicycle',4],['tap',4],['plank',4],['bridgemarch',4]]},
- {id:'c3',lv:3,name:'核心挑戰',desc:'高強度，含動態棒式組合',rest:10,
-  items:[['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]]},
- {id:'all',lv:0,name:'全部課程',desc:'初階 → 中階 → 高階一次做完',rest:15,items:[]}
+ {id:'c1',lv:1,name:'核心入門',desc:'15 分鐘，每次隨機排列',rest:20,eights:4,random:true,
+  pool:['bridge','situp','bridgemarch','plank','elbowknee']},
+ {id:'c2',lv:2,name:'核心強化',desc:'15 分鐘，每次隨機排列',rest:15,eights:6,random:true,
+  pool:['hipraise','elbowknee','bicycle','tap','plank','bridgemarch','situp']},
+ {id:'c3',lv:3,name:'核心挑戰',desc:'15 分鐘，每次隨機排列',rest:10,eights:8,random:true,
+  pool:['climber','cocoon','bicycle','planklunge','tap','plank','hipraise','elbowknee']},
+ {id:'all',lv:0,name:'全部課程',desc:'初階 → 中階 → 高階的代表動作一次做完',rest:15,
+  items:[['bridge',4],['situp',4],['bridgemarch',4],['plank',4],['hipraise',4],['elbowknee',4],['bicycle',4],['tap',4],['plank',4],['bridgemarch',4],['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]]}
 ];
-COURSES[3].items=COURSES.slice(0,3).flatMap(c=>c.items);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function buildQueue(c){
+  const out=[];let t=5,bag=[];
+  while(true){
+    if(!bag.length){bag=shuffle(c.pool);if(out.length&&bag[0]===out[out.length-1][0])bag.push(bag.shift())}
+    const id=bag[0],rest=out.length?restOf(c):0,left=TARGET-t-rest;
+    let e=c.eights;
+    while(e>1&&secOf(id,e)>left)e--;
+    if(secOf(id,e)>left||left<20)break;
+    bag.shift();out.push([id,e]);t+=rest+secOf(id,e);
+  }
+  return out;
+}
+COURSES.forEach(c=>{if(c.random)c.items=[]});
 
 /* ---------- Settings ---------- */
 let S={speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
@@ -207,9 +222,9 @@ function home(){
   <h1>核心訓練</h1><p class="sub">開始後不用碰手機：跟著拍子做，時間到自動換下一個動作</p>
   <div class="sec">課程</div>
   ${COURSES.map(c=>`<button class="course" data-c="${c.id}">
-    <div class="top"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h3>${c.name}</h3><span class="meta">${c.items.length} 個動作・${fmt(courseSec(c))}</span></div>
-    <div class="thumbs">${c.items.map(([id])=>`<div class="t">${still(id)}</div>`).join('')}</div>
-    <div class="chips">${c.items.map(([id,e,sd])=>`<span class="chip">${EX[id].name} ${e}×8</span>`).join('')}</div>
+    <div class="top"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h3>${c.name}</h3><span class="meta">${c.random?'約 15 分鐘・隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</span></div>
+    <div class="thumbs">${(c.random?c.pool:c.items.map(x=>x[0])).map(id=>`<div class="t">${still(id)}</div>`).join('')}</div>
+    <div class="chips">${c.random?c.pool.map(id=>`<span class="chip">${EX[id].name}</span>`).join('')+`<span class="chip">每個 ${c.eights}×8</span>`:c.items.map(([id,e])=>`<span class="chip">${EX[id].name} ${e}×8</span>`).join('')}</div>
   </button>`).join('')}
   <div class="sec">設定</div>
   <div class="settings">
@@ -230,11 +245,12 @@ function home(){
   <div class="grid">${Object.keys(EX).map(id=>`<button class="ex" data-x="${id}"><div class="pic">${still(id)}</div><b>${EX[id].name}</b><small>${LV[EX[id].lv][0]}・${EX[id].en}</small></button>`).join('')}</div>`;
   hydrate();scrollTo(0,0);
 }
-function courseView(c){
+function courseView(c,keep){
+  if(c.random&&!keep){c.items=buildQueue(c);c._ran=false}
   stopPreview();
   $('#app').innerHTML=`<button class="back" data-home>‹ 返回</button>
   <span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
-  <h1>${c.name}</h1><p class="sub">${c.desc}・約 ${fmt(courseSec(c))}・每個動作間休息 ${restOf(c)} 秒</p>
+  <h1>${c.name}</h1><p class="sub">${c.desc}・本次 ${c.items.length} 個動作・約 ${fmt(courseSec(c))}・每個動作間休息 ${restOf(c)} 秒</p>${c.random?'<button class="yt" data-reroll="'+c.id+'" style="width:100%;margin:0 0 12px">🔀 重新隨機排列</button>':''}
   <div class="list">${c.items.map(([id,e,sd])=>`<button class="item" data-x="${id}" data-side="${sd||''}"><div class="pic">${still(id)}</div><div><b>${EX[id].name}</b><small>${EX[id].en}・約 ${Math.round(secOf(id,e))} 秒</small></div><span class="num">${e} 個八拍</span></button>`).join('')}</div>
   <button class="big" data-start="${c.id}">▶ 開始訓練</button>
   <p class="note">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p>`;
@@ -260,8 +276,9 @@ document.addEventListener('click',e=>{
     scrollTo(0,document.body.scrollHeight); return;
   }
   if(b.dataset.c!==undefined&&b.classList.contains('course')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
-  if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c)); }
+  if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c),true); }
   if(b.dataset.x){ const cur=COURSES.find(c=>$('[data-start="'+c.id+'"]')); return exView(b.dataset.x,b.dataset.side,cur&&cur.id); }
+  if(b.dataset.reroll) return courseView(COURSES.find(c=>c.id===b.dataset.reroll));
   if(b.dataset.start) return startCourse(COURSES.find(c=>c.id===b.dataset.start));
 });
 
@@ -340,6 +357,8 @@ function startCourse(c){
   stopPreview();
   try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}
   try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}
+  if(c.random&&c._ran)c.items=buildQueue(c);
+  c._ran=true;
   const q=c.items.map(([id,e,sd])=>({id,e,sd}));
   R={c,q,i:0,phase:'prep',dur:5,t0:performance.now(),paused:false,pAt:0,last:-1};
   $('#run').classList.add('show');$('#run').classList.toggle('withvideo',videoOn()); document.body.style.overflow='hidden';
