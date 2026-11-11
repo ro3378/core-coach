@@ -164,6 +164,14 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .mini{flex:1;grid-auto-rows:minmax(40px,1fr)}
 #run:not(.withvideo) .mid{flex:1;display:flex;flex-direction:column;min-height:0}
 #run:not(.withvideo) .rstage{flex:1 1 auto;aspect-ratio:auto;max-height:none;min-height:150px}
+.bigcta{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:clamp(84px,13vh,130px);font-size:clamp(22px,3.4vh,30px);margin:6px 0 4px;box-shadow:0 8px 24px #FF8A4C55}
+.bigcta small{font-size:13px;font-weight:500;opacity:.75}
+#app.fit{height:100vh;height:100dvh;min-height:0}
+#app.fit .cview,#app.fit .cright{min-height:0}
+.tiles{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(84px,1fr);gap:8px}
+.tile{display:flex;flex-direction:column;background:var(--panel);border-radius:14px;padding:6px;min-height:0}
+.tile .tpic{flex:1;min-height:50px;background:#fff;border-radius:10px;overflow:hidden;display:block}
+.tile b{font-size:14px;padding:6px 2px 2px;text-align:center}
 .lnote{display:none}
 @media (orientation:landscape) and (max-height:600px){
   #run:not(.withvideo) .rbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto 1fr auto auto auto;column-gap:18px;max-width:none;padding:0 16px 12px}
@@ -186,8 +194,12 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
   .ctext b{font-size:16px}
   .go{padding:0 14px}
   .fold{margin-top:8px}.fold summary{padding:10px 0}
+  .tiles{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(70px,1fr)}
+  .cleft{display:flex;flex-direction:column;min-height:0}
+  .cleft .back{align-self:flex-start}
+  .cview{height:100%}
+  .cleft .bigcta{flex:1;max-height:200px}
   .cview{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:18px;align-items:stretch}
-  .cleft{position:sticky;top:10px}
   .cright .sec{margin-top:6px}
   .lnote{display:block;text-align:left}.pnote{display:none}
   .ctarow .big{padding:14px}
@@ -314,7 +326,7 @@ function mountLottie(el,id,play){
 }
 const FIT={};
 function fitAnim(a,el,id){
-  const svg=el.querySelector('svg'),g=svg&&svg.querySelector('g');if(!g)return;
+  const svg=el.querySelector('svg'),g=svg&&svg.querySelector(':scope > g');if(!g)return;
   let box=FIT[id];
   if(!box){
     let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;
@@ -350,7 +362,7 @@ function segCtl(key,opts){
 let VIEW='home',homeY=0,courseY=0;
 let FOLD={set:false,lib:false};
 function home(){
-  VIEW='home';
+  VIEW='home';$('#app').classList.remove('fit');
   stopPreview();
   $('#app').innerHTML=`
   <div class="hhead"><h1>核心訓練</h1></div><p class="sub">按開始就不用再碰手機</p>
@@ -381,18 +393,21 @@ function courseView(c,keep,stay){
   const y0=scrollY;VIEW='course';
   if(c.random&&!keep){c.items=buildQueue(c);c._ran=false}
   stopPreview();
+  $('#app').classList.add('fit');
+  const ids=c.random?c.pool:[...new Set(c.items.map(x=>x[0]))];
   $('#app').innerHTML=`<div class="cview"><div class="cleft"><button class="back" data-home>‹ 返回</button>
   <div class="chead"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h1>${c.name}</h1></div>
-  <p class="sub">${c.items.length} 個動作・約 ${fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
-  <div class="ctarow"><button class="big" data-start="${c.id}">▶ 開始訓練</button>${c.random?`<button class="reroll" data-reroll="${c.id}" aria-label="重新隨機排列">🔀<small>換順序</small></button>`:''}</div>
+  <p class="sub">${c.random?'約 15 分鐘・每次隨機順序':c.items.length+' 個動作・約 '+fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
+  <button class="big bigcta" data-start="${c.id}"><span>▶ 開始訓練</span><small>${c.random?'每次開始都會重新隨機排列':'依固定順序進行'}</small></button>
   <p class="note lnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div><div class="cright">
-  <div class="sec">${c.random?'本次順序':'動作順序'}</div>
-  <ol class="mini">${c.items.map(([id,e],k)=>`<li><button data-x="${id}"><i>${k+1}</i><span class="mpic">${still(id)}</span><b>${NM(id)}</b><em>${e}×8</em></button></li>`).join('')}</ol>
+  <div class="sec">這堂課會做的動作（${ids.length}）</div>
+  <div class="tiles">${ids.map(id=>`<button class="tile" data-x="${id}"><span class="tpic"><span class="lt" data-ltp="${id}"></span></span><b>${NM(id)}</b></button>`).join('')}</div>
   <p class="note pnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div></div>`;
-  hydrate();scrollTo(0,stay?y0:keep?courseY:0);
+  document.querySelectorAll('.lt[data-ltp]').forEach(el=>mountLottie(el,el.dataset.ltp,true));
+  scrollTo(0,stay?y0:keep?courseY:0);
 }
 function exView(id,side,from){
-  VIEW='ex';
+  VIEW='ex';$('#app').classList.remove('fit');
   const ex=EX[id];
   $('#app').innerHTML=`<button class="back" data-${from?'c="'+from+'"':'home'}>‹ 返回</button>
   <span class="badge" style="background:${LV[ex.lv][1]}">${LV[ex.lv][0]}</span>
@@ -580,7 +595,7 @@ $('#prev').onclick=()=>{if(!R)return;if(R.paused)togglePause();if(R.phase==='wor
 $('#quit').onclick=()=>endRun(true);
 function finish(){
   chime();say('完成！辛苦了');
-  const c=R.c;endRun(false);
+  const c=R.c;endRun(false);$('#app').classList.remove('fit');
   $('#app').innerHTML=`<div class="done-screen"><div class="ico">🎉</div><h1>完成 ${c.name}</h1><p class="sub">${c.items.length} 個動作・約 ${fmt(courseSec(c))}</p>
   <button class="big" data-start="${c.id}">再來一次</button><button class="big" style="background:var(--panel);color:var(--text)" data-home>回首頁</button></div>`;
   document.querySelectorAll('[data-home]').forEach(b=>b.classList.add('back'));
