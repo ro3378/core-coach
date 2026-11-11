@@ -158,15 +158,17 @@ const EX={
  climber:{name:'登山者',en:'Running Plank',lv:3,bpm:100,cues:['高棒式起始，手在肩下','膝蓋輪流往胸口帶','臀部不要翹高','跟著拍子保持節奏'],yt:'登山者 mountain climber 教學'},
  planklunge:{name:'棒式弓箭步',en:'Plank Lunges',lv:3,bpm:50,cues:['高棒式起始','單腳跨到同側手旁邊','回到棒式再換腳','核心穩住、臀部不翹'],yt:'plank lunges 教學'}
 };
-const LV={1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)']};
+const LV={0:['全部','var(--accent)'],1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)']};
 const COURSES=[
  {id:'c1',lv:1,name:'核心入門',desc:'每天 3 分鐘，建立核心穩定',rest:15,
   items:[['bridge',4],['situp',4],['bridgemarch',4],['plank',4]]},
  {id:'c2',lv:2,name:'核心強化',desc:'腹肌＋側腹＋臀部全面加強',rest:15,
   items:[['hipraise',4],['elbowknee',4],['bicycle',4],['tap',4],['plank',4],['bridgemarch',4]]},
  {id:'c3',lv:3,name:'核心挑戰',desc:'高強度，含動態棒式組合',rest:10,
-  items:[['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]]}
+  items:[['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]]},
+ {id:'all',lv:0,name:'全部課程',desc:'初階 → 中階 → 高階一次做完',rest:15,items:[]}
 ];
+COURSES[3].items=COURSES.slice(0,3).flatMap(c=>c.items);
 
 /* ---------- Settings ---------- */
 let S={speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
