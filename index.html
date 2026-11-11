@@ -143,6 +143,36 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .breath .bout{position:absolute;animation-delay:-4s}
 @keyframes bt{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
 .hhead{display:flex;align-items:center;justify-content:space-between}
+.svgi{width:1.15em;height:1.15em;fill:currentColor;display:block}
+.ic{display:flex;align-items:center}
+.lnote{display:none}
+@media (orientation:landscape) and (max-height:600px){
+  #run:not(.withvideo) .rbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto 1fr auto auto auto;column-gap:18px;max-width:none;padding:0 16px 12px}
+  #run:not(.withvideo) .mid{display:contents}
+  #run:not(.withvideo) .rstage{grid-column:1;grid-row:1/7;aspect-ratio:auto;height:100%;max-height:none;min-height:0}
+  #run:not(.withvideo) .phase{grid-column:2;grid-row:1}
+  #run:not(.withvideo) .rname{grid-column:2;grid-row:2;font-size:26px;margin:0}
+  #run:not(.withvideo) .counter{grid-column:2;grid-row:3;margin:0;align-items:center}
+  #run:not(.withvideo) .beat{font-size:80px}
+  #run:not(.withvideo) .bar{grid-column:2;grid-row:4;margin-top:6px}
+  #run:not(.withvideo) .next{grid-column:2;grid-row:5;margin-top:6px;font-size:13px}
+  #run:not(.withvideo) .ctrls{grid-column:2;grid-row:6;margin-top:8px;padding:0}
+  #run:not(.withvideo) .ctrls button{padding:10px 0}
+  #run:not(.withvideo) .note{display:none}
+  #run:not(.withvideo) .rtop{padding:8px 16px 6px}
+  .wrap{max-width:920px;padding:10px 20px 20px}
+  h1{font-size:22px}.sub{margin:0 0 8px;font-size:13px}
+  .clist{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .clist .ccard{margin:0;padding:6px}
+  .ctext b{font-size:16px}
+  .go{padding:0 14px}
+  .fold{margin-top:8px}.fold summary{padding:10px 0}
+  .cview{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:18px;align-items:start}
+  .cleft{position:sticky;top:10px}
+  .cright .sec{margin-top:6px}
+  .lnote{display:block;text-align:left}.pnote{display:none}
+  .ctarow .big{padding:14px}
+}
 @media (orientation:landscape) and (max-height:600px){
   #run.withvideo{background:transparent;pointer-events:none}
   #run.withvideo button{pointer-events:auto}
@@ -192,9 +222,9 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
     <div class="bar"><div id="barf"></div></div>
     <div class="next" id="next"></div>
     <div class="ctrls" id="ctrls">
-      <button id="prev" aria-label="上一個"><span class="ic">⏮</span><span class="tx">上一個</span></button>
-      <button class="pp" id="pause" aria-label="暫停"><span class="ic">⏸</span><span class="tx">暫停</span></button>
-      <button id="skip" aria-label="跳過"><span class="tx">跳過</span><span class="ic">⏭</span></button>
+      <button id="prev" aria-label="上一個"><span class="ic"><svg viewBox="0 0 24 24" class="svgi" aria-hidden="true"><rect x="4.5" y="5" width="3" height="14" rx="1"/><path d="M19.5 6.2v11.6a1 1 0 0 1-1.55.83L9.6 12.83a1 1 0 0 1 0-1.66l8.35-5.8a1 1 0 0 1 1.55.83z"/></svg></span><span class="tx">上一個</span></button>
+      <button class="pp" id="pause" aria-label="暫停"><span class="ic"><svg viewBox="0 0 24 24" class="svgi" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></span><span class="tx">暫停</span></button>
+      <button id="skip" aria-label="跳過"><span class="tx">跳過</span><span class="ic"><svg viewBox="0 0 24 24" class="svgi" aria-hidden="true"><rect x="16.5" y="5" width="3" height="14" rx="1"/><path d="M4.5 6.2v11.6a1 1 0 0 0 1.55.83l8.35-5.8a1 1 0 0 0 0-1.66L6.05 5.37A1 1 0 0 0 4.5 6.2z"/></svg></span></button>
     </div>
     <div class="note" id="note"></div>
   </div>
@@ -245,11 +275,11 @@ function buildQueue(c){
 COURSES.forEach(c=>{if(c.random)c.items=[]});
 
 /* ---------- Settings ---------- */
-let S={lang:'zh',speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
+let S={speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
 try{Object.assign(S,JSON.parse(localStorage.getItem('core-set')||'{}'))}catch(e){}
 const saveS=()=>{try{localStorage.setItem('core-set',JSON.stringify(S))}catch(e){}};
 
-const NM=id=>S.lang==='en'?EX[id].en:EX[id].name;
+const NM=id=>EX[id].name;
 /* ---------- Lottie ---------- */
 const still=id=>`<div class="lt" data-lt="${id}"></div>`;
 function mountLottie(el,id,play){
@@ -282,12 +312,12 @@ function home(){
   VIEW='home';
   stopPreview();
   $('#app').innerHTML=`
-  <div class="hhead"><h1>核心訓練</h1><div class="seg lang" data-k="lang"><button data-v="zh" class="${S.lang==='zh'?'on':''}">中</button><button data-v="en" class="${S.lang==='en'?'on':''}">EN</button></div></div><p class="sub">按開始就不用再碰手機</p>
-  ${COURSES.map(c=>`<div class="ccard">
+  <div class="hhead"><h1>核心訓練</h1></div><p class="sub">按開始就不用再碰手機</p>
+  <div class="clist">${COURSES.map(c=>`<div class="ccard">
     <button class="cbody" data-c="${c.id}"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
       <span class="ctext"><b>${c.name}</b><small>${c.random?'約 15 分鐘・每次隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</small></span></button>
     <button class="go" data-go="${c.id}">▶ 開始</button>
-  </div>`).join('')}
+  </div>`).join('')}</div>
   <details class="fold" data-fold="set"${FOLD.set?' open':''}><summary>設定・邊看影片邊訓練<span>${S.speed===1?'標準':S.speed<1?'慢':'快'}速・${parseYT(S.pl)&&!parseYT(S.pl).bad?'已設影片':'無影片'}</span></summary>
   <div class="settings">
     <div class="row"><span>節奏速度</span>${segCtl('speed',[[0.75,'慢'],[1,'標準'],[1.25,'快']])}</div>
@@ -310,13 +340,14 @@ function courseView(c,keep,stay){
   const y0=scrollY;VIEW='course';
   if(c.random&&!keep){c.items=buildQueue(c);c._ran=false}
   stopPreview();
-  $('#app').innerHTML=`<button class="back" data-home>‹ 返回</button>
+  $('#app').innerHTML=`<div class="cview"><div class="cleft"><button class="back" data-home>‹ 返回</button>
   <div class="chead"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h1>${c.name}</h1></div>
   <p class="sub">${c.items.length} 個動作・約 ${fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
   <div class="ctarow"><button class="big" data-start="${c.id}">▶ 開始訓練</button>${c.random?`<button class="reroll" data-reroll="${c.id}" aria-label="重新隨機排列">🔀<small>換順序</small></button>`:''}</div>
+  <p class="note lnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div><div class="cright">
   <div class="sec">${c.random?'本次順序':'動作順序'}</div>
   <ol class="mini">${c.items.map(([id,e],k)=>`<li><button data-x="${id}"><i>${k+1}</i><span class="mpic">${still(id)}</span><b>${NM(id)}</b><em>${e}×8</em></button></li>`).join('')}</ol>
-  <p class="note">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p>`;
+  <p class="note pnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div></div>`;
   hydrate();scrollTo(0,stay?y0:keep?courseY:0);
 }
 function exView(id,side,from){
@@ -499,8 +530,8 @@ function frame(now){
 }
 function togglePause(){
   if(!R) return;
-  if(!R.paused){R.paused=true;R.pAt=performance.now();$('#pause').innerHTML='<span class="ic">▶</span><span class="tx">繼續</span>';try{R.anim&&R.anim.pause()}catch(e){};try{speechSynthesis.cancel()}catch(e){};if(S.vpause)try{YTP&&YTP.pauseVideo()}catch(e){}}
-  else{R.t0+=performance.now()-R.pAt;R.paused=false;$('#pause').innerHTML='<span class="ic">⏸</span><span class="tx">暫停</span>';try{R.anim&&R.anim.play()}catch(e){};if(S.vpause)try{YTP&&YTP.playVideo()}catch(e){}}
+  if(!R.paused){R.paused=true;R.pAt=performance.now();$('#pause').innerHTML='<span class="ic"><svg viewBox="0 0 24 24" class="svgi" aria-hidden="true"><path d="M7 5.7v12.6a1 1 0 0 0 1.53.85l10.1-6.3a1 1 0 0 0 0-1.7L8.53 4.85A1 1 0 0 0 7 5.7z"/></svg></span><span class="tx">繼續</span>';try{R.anim&&R.anim.pause()}catch(e){};try{speechSynthesis.cancel()}catch(e){};if(S.vpause)try{YTP&&YTP.pauseVideo()}catch(e){}}
+  else{R.t0+=performance.now()-R.pAt;R.paused=false;$('#pause').innerHTML='<span class="ic"><svg viewBox="0 0 24 24" class="svgi" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></span><span class="tx">暫停</span>';try{R.anim&&R.anim.play()}catch(e){};if(S.vpause)try{YTP&&YTP.playVideo()}catch(e){}}
 }
 $('#pause').onclick=togglePause;
 $('#skip').onclick=()=>{if(!R)return;if(R.paused)togglePause();advance()};
