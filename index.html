@@ -272,8 +272,8 @@ document.addEventListener('click',e=>{
   const sg=e.target.closest('.seg');
   if(sg&&e.target.dataset.v!==undefined){
     const k=sg.dataset.k, raw=e.target.dataset.v;
-    S[k]=raw==='true'?true:raw==='false'?false:Number(raw); saveS(); home();
-    scrollTo(0,document.body.scrollHeight); return;
+    S[k]=raw==='true'?true:raw==='false'?false:Number(raw); saveS();
+    const y=scrollY; home(); scrollTo(0,y); return;
   }
   if(b.dataset.c!==undefined&&b.classList.contains('course')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
   if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c),true); }
