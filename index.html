@@ -108,7 +108,8 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .pl{width:100%;background:#0F1115;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px;font:inherit;font-size:14px}
 .plrow{flex-direction:column;align-items:stretch}
 .plmsg{font-size:12px;color:var(--mute)}
-#ytpre{position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0}
+#ytwrap{position:fixed;left:-10000px;top:0;width:320px;height:180px;z-index:20;border-radius:16px;overflow:hidden;background:#000}
+#ytwrap iframe{width:100%;height:100%;display:block;border:0}
 @media (max-height:700px){.beat{font-size:88px}.rname{font-size:26px}}
 </style>
 </head>
@@ -118,7 +119,7 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 <div id="run">
   <div class="rtop"><button class="x" id="quit" aria-label="結束">✕</button><div class="prog" id="prog"></div></div>
   <div class="rbody">
-    <div class="vid" id="vidbox"><div id="yt"></div></div>
+    <div class="vid" id="vidbox"></div>
     <div class="phase" id="phase">準備</div>
     <div class="rname" id="rname"></div>
     <div class="mid"><div class="rstage" id="rstage"><span class="tag" id="rtag" hidden></span></div>
@@ -140,6 +141,7 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
   </div>
 </div>
 
+<div id="ytwrap"><div id="yt"></div></div>
 <script>
 /* ---------- Poses ---------- */
 const X=(b,o)=>Object.assign({},b,o);
@@ -374,7 +376,7 @@ function parseYT(u){
   return {bad:true};
 }
 function plStatus(){const p=parseYT(S.pl);return !p?'不填就只播拍子和語音':p.bad?'⚠️ 看不懂這個網址，請貼 YouTube 播放清單或影片連結':p.list?'✓ 播放清單已設定，按開始訓練就會一起播放':'✓ 影片已設定，按開始訓練就會一起播放'}
-let YTP=null,ytReady=false,ytKey='';
+let YTP=null,ytReady=false,ytKey='',ytOk=false,pendingPlay=false;
 window.onYouTubeIframeAPIReady=()=>{ytReady=true;buildPlayer()};
 function buildPlayer(){
   const p=parseYT(S.pl);
@@ -382,20 +384,28 @@ function buildPlayer(){
   const key=JSON.stringify(p); if(YTP&&key===ytKey) return;
   ytKey=key;
   try{YTP&&YTP.destroy()}catch(e){}
-  if(!document.getElementById('yt')){const d=document.createElement('div');d.id='yt';$('#vidbox').appendChild(d)}
+  ytOk=false;if(!document.getElementById('yt')){const d=document.createElement('div');d.id='yt';$('#ytwrap').appendChild(d)}
   const pv={playsinline:1,rel:0,modestbranding:1,origin:location.origin};
   if(p.list){pv.listType='playlist';pv.list=p.list}
   YTP=new YT.Player('yt',{width:'100%',height:'100%',videoId:p.v||undefined,playerVars:pv,
-    events:{onReady:()=>{try{if(p.list&&S.shuffle)YTP.setShuffle(true)}catch(e){}}}});
+    events:{onReady:()=>{ytOk=true;try{if(p.list&&S.shuffle)YTP.setShuffle(true)}catch(e){};if(pendingPlay&&R&&!R.paused){try{YTP.playVideo()}catch(e){}}pendingPlay=false},
+    onError:()=>{$('#note').textContent='有影片不允許在外部網站播放，已跳到下一部';try{YTP.nextVideo()}catch(e){}}}});
 }
 (function(){const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)})();
 document.addEventListener('change',e=>{if(e.target.id==='plin'){S.pl=e.target.value;saveS();$('#plmsg').textContent=plStatus();buildPlayer()}});
 document.addEventListener('input',e=>{if(e.target.id==='plin'){$('#plmsg').textContent=(()=>{const p=parseYT(e.target.value);return !p?'':p.bad?'⚠️ 看不懂這個網址':'✓ 看起來可以，離開輸入框即儲存'})()}});
 function ytFrame(){return YTP&&YTP.getIframe&&YTP.getIframe()}
 function videoOn(){
-  const f=ytFrame(); if(!f) return false;
-  try{if(S.shuffle&&YTP.setShuffle)YTP.setShuffle(true);YTP.playVideo()}catch(e){}
+  const p=parseYT(S.pl); if(!YTP||!p||p.bad) return false;
+  if(ytOk){try{YTP.playVideo()}catch(e){}}else pendingPlay=true;
   return true;
+}
+function placeVideo(){
+  const w=$('#ytwrap');
+  if(R&&$('#run').classList.contains('withvideo')){
+    const b=$('#vidbox').getBoundingClientRect();
+    w.style.left=b.left+'px';w.style.top=b.top+'px';w.style.width=b.width+'px';w.style.height=b.height+'px';
+  }else{w.style.left='-10000px'}
 }
 function videoOff(){try{YTP&&YTP.pauseVideo()}catch(e){}}
 
@@ -426,7 +436,7 @@ function enter(ph){
   $('#phase').textContent=ph==='work'?`第 ${R.i+1} / ${R.q.length} 個動作`:ph==='rest'?'休息・下一個動作':'準備開始';
   $('#phase').style.color=ph==='work'?'var(--accent)':'var(--ok)';
   $('#rname').innerHTML=nm+`<small>${ex.en}</small>`;
-  $('#rtag').hidden=ph==='work';$('#rtag').textContent='下一個';
+  $('#rtag').hidden=ph==='work';$('#rtag').textContent=ph==='prep'?'第一個':'下一個';
   const nx=R.q[R.i+1];
   $('#next').innerHTML=ph==='work'?(nx?`<span>下一個：<b>${EX[nx.id].name}${sideTxt(nx.sd)}</b></span>`:'<b>最後一個動作！</b>')+`<span>${it.e} 個八拍</span>`:`<span>${ex.cues[0]}</span>`;
 }
@@ -469,6 +479,7 @@ function frame(now){
     st.querySelector('svg')?.remove();
     st.insertAdjacentHTML('afterbegin',figure(poseAt(EX[cur().id],beatF),cur().sd==='R',EX[cur().id].along));
   }
+  placeVideo();
   if(R) R.raf=requestAnimationFrame(frame);
 }
 function togglePause(){
@@ -493,7 +504,7 @@ function endRun(goBack){
   if(!R) return;cancelAnimationFrame(R.raf);const c=R.c;R=null;
   try{speechSynthesis.cancel()}catch(e){}
   try{wl&&wl.release()}catch(e){};wl=null;
-  videoOff();$('#run').classList.remove('show');document.body.style.overflow='';
+  videoOff();pendingPlay=false;$('#run').classList.remove('show','withvideo');placeVideo();document.body.style.overflow='';
   if(goBack) courseView(c);
 }
 home();
