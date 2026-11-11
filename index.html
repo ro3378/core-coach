@@ -387,9 +387,10 @@ function buildPlayer(){
   ytOk=false;if(!document.getElementById('yt')){const d=document.createElement('div');d.id='yt';$('#ytwrap').appendChild(d)}
   const pv={playsinline:1,rel:0,modestbranding:1,origin:location.origin};
   if(p.list){pv.listType='playlist';pv.list=p.list}
-  YTP=new YT.Player('yt',{width:'100%',height:'100%',videoId:p.v||undefined,playerVars:pv,
+  const opt={width:'100%',height:'100%',playerVars:pv};if(p.v)opt.videoId=p.v;
+  YTP=new YT.Player('yt',Object.assign(opt,{
     events:{onReady:()=>{ytOk=true;try{if(p.list&&S.shuffle)YTP.setShuffle(true)}catch(e){};if(pendingPlay&&R&&!R.paused){try{YTP.playVideo()}catch(e){}}pendingPlay=false},
-    onError:()=>{$('#note').textContent='有影片不允許在外部網站播放，已跳到下一部';try{YTP.nextVideo()}catch(e){}}}});
+    onError:()=>{$('#note').textContent='有影片不允許在外部網站播放，已跳到下一部';try{YTP.nextVideo()}catch(e){}}}}));
 }
 (function(){const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)})();
 document.addEventListener('change',e=>{if(e.target.id==='plin'){S.pl=e.target.value;saveS();$('#plmsg').textContent=plStatus();buildPlayer()}});
