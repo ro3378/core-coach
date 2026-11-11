@@ -216,7 +216,9 @@ function stopPreview(){try{window.lottie&&lottie.destroy()}catch(e){}}
 function segCtl(key,opts){
   return `<div class="seg" data-k="${key}">${opts.map(([v,l])=>`<button data-v="${v}" class="${S[key]===v?'on':''}">${l}</button>`).join('')}</div>`;
 }
+let VIEW='home',homeY=0,courseY=0;
 function home(){
+  VIEW='home';
   stopPreview();
   $('#app').innerHTML=`
   <h1>核心訓練</h1><p class="sub">開始後不用碰手機：跟著拍子做，時間到自動換下一個動作</p>
@@ -243,9 +245,10 @@ function home(){
   </div>
   <div class="sec">動作庫</div>
   <div class="grid">${Object.keys(EX).map(id=>`<button class="ex" data-x="${id}"><div class="pic">${still(id)}</div><b>${EX[id].name}</b><small>${LV[EX[id].lv][0]}・${EX[id].en}</small></button>`).join('')}</div>`;
-  hydrate();scrollTo(0,0);
+  hydrate();scrollTo(0,homeY);
 }
-function courseView(c,keep){
+function courseView(c,keep,stay){
+  const y0=scrollY;VIEW='course';
   if(c.random&&!keep){c.items=buildQueue(c);c._ran=false}
   stopPreview();
   $('#app').innerHTML=`<button class="back" data-home>‹ 返回</button>
@@ -254,9 +257,10 @@ function courseView(c,keep){
   <div class="list">${c.items.map(([id,e,sd])=>`<button class="item" data-x="${id}" data-side="${sd||''}"><div class="pic">${still(id)}</div><div><b>${EX[id].name}</b><small>${EX[id].en}・約 ${Math.round(secOf(id,e))} 秒</small></div><span class="num">${e} 個八拍</span></button>`).join('')}</div>
   <button class="big" data-start="${c.id}">▶ 開始訓練</button>
   <p class="note">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p>`;
-  hydrate();scrollTo(0,0);
+  hydrate();scrollTo(0,stay?y0:keep?courseY:0);
 }
 function exView(id,side,from){
+  VIEW='ex';
   const ex=EX[id];
   $('#app').innerHTML=`<button class="back" data-${from?'c="'+from+'"':'home'}>‹ 返回</button>
   <span class="badge" style="background:${LV[ex.lv][1]}">${LV[ex.lv][0]}</span>
@@ -268,17 +272,18 @@ function exView(id,side,from){
   scrollTo(0,0);
 }
 document.addEventListener('click',e=>{
+  if(VIEW==='home')homeY=scrollY; else if(VIEW==='course')courseY=scrollY;
   const b=e.target.closest('button,[data-k]'); if(!b) return;
   const sg=e.target.closest('.seg');
   if(sg&&e.target.dataset.v!==undefined){
     const k=sg.dataset.k, raw=e.target.dataset.v;
     S[k]=raw==='true'?true:raw==='false'?false:Number(raw); saveS();
-    const y=scrollY; home(); scrollTo(0,y); return;
+    homeY=scrollY; home(); return;
   }
   if(b.dataset.c!==undefined&&b.classList.contains('course')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
   if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c),true); }
   if(b.dataset.x){ const cur=COURSES.find(c=>$('[data-start="'+c.id+'"]')); return exView(b.dataset.x,b.dataset.side,cur&&cur.id); }
-  if(b.dataset.reroll) return courseView(COURSES.find(c=>c.id===b.dataset.reroll));
+  if(b.dataset.reroll) return courseView(COURSES.find(c=>c.id===b.dataset.reroll),false,true);
   if(b.dataset.start) return startCourse(COURSES.find(c=>c.id===b.dataset.start));
 });
 
