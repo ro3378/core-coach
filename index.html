@@ -298,9 +298,31 @@ function mountLottie(el,id,play){
   el.innerHTML='';
   if(!window.lottie){el.innerHTML=`<div class="ltfb">${NM(id)}</div>`;return null}
   const a=lottie.loadAnimation({container:el,renderer:'svg',loop:true,autoplay:!!play,path:'lottie/'+id+'.json',
-    rendererSettings:{preserveAspectRatio:play?'xMidYMid meet':'xMidYMid slice'}});
-  if(play) a.setSpeed(S.speed); else a.addEventListener('DOMLoaded',()=>a.goToAndStop(Math.floor(a.totalFrames*.35),true));
+    rendererSettings:{preserveAspectRatio:'xMidYMid meet'}});
+  a.addEventListener('DOMLoaded',()=>{
+    fitAnim(a,el,id);
+    if(play){a.setSpeed(S.speed);a.goToAndPlay(0,true)} else a.goToAndStop(Math.floor(a.totalFrames*.35),true);
+  });
   return a;
+}
+const FIT={};
+function fitAnim(a,el,id){
+  const svg=el.querySelector('svg'),g=svg&&svg.querySelector('g');if(!g)return;
+  let box=FIT[id];
+  if(!box){
+    let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;
+    for(let k=0;k<12;k++){
+      a.goToAndStop(Math.floor(a.totalFrames*k/12),true);
+      let b;try{b=g.getBBox()}catch(e){return}
+      if(!b.width)continue;
+      x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);
+    }
+    if(x2<=x1)return;
+    const p=Math.max(x2-x1,y2-y1)*.06;
+    box=FIT[id]=[x1-p,y1-p,x2-x1+2*p,y2-y1+2*p].map(v=>Math.round(v));
+  }
+  svg.setAttribute('viewBox',box.join(' '));
+  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
 }
 function hydrate(){document.querySelectorAll('.lt[data-lt]').forEach(el=>mountLottie(el,el.dataset.lt,false))}
 /* ---------- Helpers ---------- */
