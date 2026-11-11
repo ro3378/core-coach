@@ -134,6 +134,36 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .mini .mpic{flex:0 0 40px;height:30px;background:#fff;border-radius:6px;overflow:hidden;display:block}
 .mini b{font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mini em{font-style:normal;color:var(--accent);font-size:12px;font-weight:700}
+.breath{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#EAFBF2,#fff 70%)}
+.breath .core,.breath .ring{position:absolute;width:42%;aspect-ratio:1;border-radius:50%;animation:br 8s ease-in-out infinite}
+.breath .core{background:#5BD49A}
+.breath .ring{background:#5BD49A;opacity:.25;width:62%;animation-delay:.15s}
+@keyframes br{0%,100%{transform:scale(.55)}50%{transform:scale(1)}}
+.breath span{position:relative;font-weight:900;font-size:22px;color:#fff;letter-spacing:4px;animation:bt 8s infinite}
+.breath .bout{position:absolute;animation-delay:-4s}
+@keyframes bt{0%,45%{opacity:1}50%,95%{opacity:0}100%{opacity:1}}
+@media (orientation:landscape) and (max-height:600px){
+  #run.withvideo{background:transparent;pointer-events:none}
+  #run.withvideo button{pointer-events:auto}
+  #run.withvideo .vid{position:fixed;inset:0;width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;margin:0;background:transparent}
+  #run.withvideo .rtop{position:fixed;top:8px;left:12px;right:12px;z-index:2;padding:0}
+  #run.withvideo .rbody{position:fixed;inset:0;max-width:none;padding:0}
+  #run.withvideo .phase,#run.withvideo .rname{position:fixed;left:16px;text-shadow:0 2px 8px #000}
+  #run.withvideo .phase{top:56px}
+  #run.withvideo .rname{top:74px;font-size:28px}
+  #run.withvideo .mid{position:fixed;left:16px;bottom:22px;display:flex;align-items:flex-end;gap:14px}
+  #run.withvideo .rstage{flex:0 0 auto;width:22vw;aspect-ratio:4/3;max-height:none;min-height:0;border-radius:14px;opacity:.95}
+  #run.withvideo .rstage .tag{font-size:11px;padding:2px 8px;top:6px;left:6px}
+  #run.withvideo .counter{flex-direction:column;align-items:flex-start;background:#000000A0;border-radius:14px;padding:8px 14px}
+  #run.withvideo .beat{font-size:72px}
+  #run.withvideo .cinfo{text-align:left}
+  #run.withvideo .dots{justify-content:flex-start}
+  #run.withvideo .bar{position:fixed;left:0;right:0;bottom:0;margin:0;height:6px;border-radius:0}
+  #run.withvideo .next,#run.withvideo .note{display:none}
+  #run.withvideo .ctrls{position:fixed;right:16px;bottom:22px;display:flex;gap:8px;margin:0;padding:0}
+  #run.withvideo .ctrls button{background:#000000A0;color:#fff;padding:10px 14px;font-size:14px;border-radius:12px}
+  #run.withvideo .ctrls .pp{background:var(--accent);color:#14161B}
+}
 @media (max-height:700px){.beat{font-size:88px}.rname{font-size:26px}}
 </style>
 </head>
@@ -372,10 +402,12 @@ function videoOn(){
   if(ytOk){try{YTP.playVideo()}catch(e){}}else pendingPlay=true;
   return true;
 }
+const LAND=matchMedia('(orientation:landscape) and (max-height:600px)');
 function placeVideo(){
   const w=$('#ytwrap');
   if(R&&$('#run').classList.contains('withvideo')){
     const b=$('#vidbox').getBoundingClientRect();
+    w.style.zIndex=LAND.matches?5:20;w.style.borderRadius=LAND.matches?'0':'16px';
     w.style.left=b.left+'px';w.style.top=b.top+'px';w.style.width=b.width+'px';w.style.height=b.height+'px';
   }else{w.style.left='-10000px'}
 }
@@ -410,8 +442,12 @@ function enter(ph){
   $('#phase').textContent=ph==='work'?`第 ${R.i+1} / ${R.q.length} 個動作`:ph==='rest'?'休息・下一個動作':'準備開始';
   $('#phase').style.color=ph==='work'?'var(--accent)':'var(--ok)';
   $('#rname').innerHTML=nm+`<small>${ex.en}</small>`;
-  if(R.figId!==it.id){stopPreview();R.anim=mountLottie($('#rfig'),it.id,true);R.figId=it.id}
-  $('#rtag').hidden=ph==='work';$('#rtag').textContent=ph==='prep'?'第一個':'下一個';
+  const fig=ph==='rest'?'__rest':it.id;
+  if(R.figId!==fig){stopPreview();R.anim=null;
+    if(fig==='__rest'){$('#rfig').innerHTML='<div class="breath"><div class="ring"></div><div class="core"></div><span class="bin">吸氣</span><span class="bout">吐氣</span></div>'}
+    else R.anim=mountLottie($('#rfig'),it.id,true);
+    R.figId=fig}
+  $('#rtag').hidden=ph==='work';$('#rtag').textContent=ph==='prep'?'第一個':'休息・深呼吸';
   const nx=R.q[R.i+1];
   $('#next').innerHTML=ph==='work'?(nx?`<span>下一個：<b>${EX[nx.id].name}${sideTxt(nx.sd)}</b></span>`:'<b>最後一個動作！</b>')+`<span>${it.e} 個八拍</span>`:`<span>${ex.cues[0]}</span>`;
 }
