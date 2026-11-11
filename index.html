@@ -90,7 +90,7 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .next{display:flex;align-items:center;justify-content:space-between;color:var(--mute);font-size:15px;margin-top:10px}
 .next b{color:var(--text)}
 .ctrls{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px;margin-top:auto;padding-top:12px}
-.ctrls button{background:var(--panel);border-radius:16px;padding:16px 0;font-weight:700;font-size:16px}
+.ctrls button{background:var(--panel);border-radius:16px;padding:16px 0;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px}
 .ctrls .pp{background:var(--accent);color:#14161B;font-size:19px}
 .note{font-size:12px;color:var(--mute);text-align:center;margin-top:8px;min-height:16px}
 .done-screen{text-align:center;padding-top:40px}
@@ -152,18 +152,22 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
   #run.withvideo .phase,#run.withvideo .rname{position:fixed;left:16px;text-shadow:0 2px 8px #000}
   #run.withvideo .phase{top:56px}
   #run.withvideo .rname{top:74px;font-size:28px}
-  #run.withvideo .mid{position:fixed;left:16px;bottom:22px;display:flex;align-items:flex-end;gap:14px}
-  #run.withvideo .rstage{flex:0 0 auto;width:14vw;aspect-ratio:4/3;max-height:none;min-height:0;border-radius:14px;opacity:.95}
   #run.withvideo .rstage .tag{font-size:11px;padding:2px 8px;top:6px;left:6px}
-  #run.withvideo .counter{flex-direction:column;align-items:flex-start;background:#000000A0;border-radius:14px;padding:8px 14px}
-  #run.withvideo .beat{font-size:72px}
   #run.withvideo .cinfo{text-align:left}
   #run.withvideo .dots{justify-content:flex-start}
+  #run.withvideo .mid{position:fixed;right:14px;bottom:16px;display:grid;grid-template-columns:auto auto;align-items:center;gap:8px 12px;background:#000000B0;border-radius:16px;padding:10px;pointer-events:auto}
+  #run.withvideo .rstage{width:13vw;aspect-ratio:4/3;max-height:none;min-height:0;border-radius:10px}
+  #run.withvideo .rstage .tag{display:none}
+  #run.withvideo .counter{flex-direction:column;align-items:flex-start;margin:0;gap:0}
+  #run.withvideo .beat{font-size:56px}
+  #run.withvideo .eight{font-size:15px}#run.withvideo .eight small{font-size:12px}
+  #run.withvideo .dots{margin:4px 0}#run.withvideo .dots i{width:10px;height:10px}
+  #run.withvideo .ctrls{grid-column:1/3;display:flex;gap:8px;margin:0;padding:0}
+  #run.withvideo .ctrls button{flex:1;background:#FFFFFF22;color:#fff;padding:8px 0;border-radius:10px;font-size:20px;line-height:1}
+  #run.withvideo .ctrls .pp{background:var(--accent);color:#14161B}
+  #run.withvideo .ctrls .tx{display:none}
   #run.withvideo .bar{position:fixed;left:0;right:0;bottom:0;margin:0;height:6px;border-radius:0}
   #run.withvideo .next,#run.withvideo .note{display:none}
-  #run.withvideo .ctrls{position:fixed;right:16px;bottom:22px;display:flex;gap:8px;margin:0;padding:0}
-  #run.withvideo .ctrls button{background:#000000A0;color:#fff;padding:10px 14px;font-size:14px;border-radius:12px}
-  #run.withvideo .ctrls .pp{background:var(--accent);color:#14161B}
 }
 @media (max-height:700px){.beat{font-size:88px}.rname{font-size:26px}}
 </style>
@@ -187,10 +191,10 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
     </div></div>
     <div class="bar"><div id="barf"></div></div>
     <div class="next" id="next"></div>
-    <div class="ctrls">
-      <button id="prev">⏮ 上一個</button>
-      <button class="pp" id="pause">暫停</button>
-      <button id="skip">跳過 ⏭</button>
+    <div class="ctrls" id="ctrls">
+      <button id="prev" aria-label="上一個"><span class="ic">⏮</span><span class="tx">上一個</span></button>
+      <button class="pp" id="pause" aria-label="暫停"><span class="ic">⏸</span><span class="tx">暫停</span></button>
+      <button id="skip" aria-label="跳過"><span class="tx">跳過</span><span class="ic">⏭</span></button>
     </div>
     <div class="note" id="note"></div>
   </div>
@@ -406,7 +410,9 @@ function videoOn(){
 }
 const LAND=matchMedia('(orientation:landscape) and (max-height:600px)');
 function placeVideo(){
-  const w=$('#ytwrap');
+  const w=$('#ytwrap'),cc=$('#ctrls'),inPanel=!!(R&&LAND.matches&&$('#run').classList.contains('withvideo'));
+  if(inPanel&&cc.parentNode!==$('.mid'))$('.mid').appendChild(cc);
+  else if(!inPanel&&cc.parentNode===$('.mid'))$('.rbody').insertBefore(cc,$('#note'));
   if(R&&$('#run').classList.contains('withvideo')){
     const b=$('#vidbox').getBoundingClientRect();
     w.style.zIndex=LAND.matches?5:20;w.style.borderRadius=LAND.matches?'0':'16px';
@@ -493,8 +499,8 @@ function frame(now){
 }
 function togglePause(){
   if(!R) return;
-  if(!R.paused){R.paused=true;R.pAt=performance.now();$('#pause').textContent='▶ 繼續';try{R.anim&&R.anim.pause()}catch(e){};try{speechSynthesis.cancel()}catch(e){};if(S.vpause)try{YTP&&YTP.pauseVideo()}catch(e){}}
-  else{R.t0+=performance.now()-R.pAt;R.paused=false;$('#pause').textContent='暫停';try{R.anim&&R.anim.play()}catch(e){};if(S.vpause)try{YTP&&YTP.playVideo()}catch(e){}}
+  if(!R.paused){R.paused=true;R.pAt=performance.now();$('#pause').innerHTML='<span class="ic">▶</span><span class="tx">繼續</span>';try{R.anim&&R.anim.pause()}catch(e){};try{speechSynthesis.cancel()}catch(e){};if(S.vpause)try{YTP&&YTP.pauseVideo()}catch(e){}}
+  else{R.t0+=performance.now()-R.pAt;R.paused=false;$('#pause').innerHTML='<span class="ic">⏸</span><span class="tx">暫停</span>';try{R.anim&&R.anim.play()}catch(e){};if(S.vpause)try{YTP&&YTP.playVideo()}catch(e){}}
 }
 $('#pause').onclick=togglePause;
 $('#skip').onclick=()=>{if(!R)return;if(R.paused)togglePause();advance()};
