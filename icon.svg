@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" fill="#14161B"/>
+<text x="256" y="300" font-family="Noto Sans CJK TC, sans-serif" font-weight="900" font-size="230" text-anchor="middle" fill="#F2F0EA">8</text>
+<g><circle cx="151" cy="372" r="14" fill="#FF8A4C"/><circle cx="186" cy="372" r="14" fill="#FF8A4C"/><circle cx="221" cy="372" r="14" fill="#FF8A4C"/><circle cx="256" cy="372" r="17" fill="#FFC24C"/><circle cx="291" cy="372" r="14" fill="#2D313A"/><circle cx="326" cy="372" r="14" fill="#2D313A"/><circle cx="361" cy="372" r="14" fill="#2D313A"/></g>
+</svg>
