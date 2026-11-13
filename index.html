@@ -181,11 +181,15 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
   #run:not(.withvideo) .phase{grid-column:2;grid-row:1}
   #run:not(.withvideo) .rname{grid-column:2;grid-row:2;font-size:26px;margin:0}
   #run:not(.withvideo) .counter{grid-column:2;grid-row:3;margin:0;align-items:center}
-  #run:not(.withvideo) .beat{font-size:80px}
+  #run:not(.withvideo) .beat{font-size:clamp(72px,min(40vh,16vw),190px)}
+  #run:not(.withvideo) .eight{font-size:clamp(20px,7vh,30px)}
+  #run:not(.withvideo) .eight small{font-size:clamp(14px,4.5vh,19px)}
+  #run:not(.withvideo) .dots i{width:clamp(14px,4.6vh,22px);height:clamp(14px,4.6vh,22px)}
   #run:not(.withvideo) .bar{grid-column:2;grid-row:4;margin-top:6px}
-  #run:not(.withvideo) .next{grid-column:2;grid-row:5;margin-top:6px;font-size:13px}
+  #run:not(.withvideo) .next{grid-column:2;grid-row:5;margin-top:8px;font-size:clamp(15px,4.8vh,20px)}
+  #run:not(.withvideo) .next b{font-size:clamp(19px,6.4vh,28px);font-weight:900}
   #run:not(.withvideo) .ctrls{grid-column:2;grid-row:6;margin-top:8px;padding:0}
-  #run:not(.withvideo) .ctrls button{padding:10px 0}
+  #run:not(.withvideo) .ctrls button{padding:10px 0;white-space:nowrap}
   #run:not(.withvideo) .note{display:none}
   #run:not(.withvideo) .rtop{padding:8px 16px 6px}
   .wrap{max-width:920px;padding:10px 20px 20px}
@@ -272,6 +276,7 @@ const EX={
  situp:{name:'仰臥起坐',en:'Sit Up',lv:1,bpm:50,cues:['屈膝，雙腳踩穩','用腹部帶起上半身','下背慢慢放回地面','不要用手拉脖子'],yt:'仰臥起坐 正確姿勢'},
  plank:{name:'棒式抬腿',en:'Leg Pull Low Plank',lv:2,bpm:60,cues:['手肘在肩膀正下方','身體成一直線','單腳輪流往上抬','髖部不要歪、不要塌腰'],yt:'棒式抬腿 plank leg lift 教學'},
  elbowknee:{name:'肘碰膝捲腹',en:'Elbow to Knee Crunch',lv:2,bpm:50,cues:['手扶頭側，不拉脖子','捲起時手肘碰對側膝','左右交替','吐氣捲起、吸氣放下'],yt:'肘碰膝捲腹 elbow to knee crunch'},
+ legraise45:{name:'半程仰臥抬腿',en:'Half Leg Raise',lv:1,bpm:50,file:'hipraise',seg:[40,62],rate:.6,cues:['仰躺，雙腿併攏伸直抬到垂直','慢慢放到約 45 度','再用下腹拉回垂直','下背貼地，不甩腿'],yt:'仰臥抬腿 45度 教學'},
  hipraise:{name:'仰臥抬腿',en:'Lying Leg Raise',lv:2,bpm:50,cues:['仰躺，雙腿併攏伸直','用下腹把雙腿抬到垂直','下放時慢慢控制、腳不碰地','下背貼地，不甩腿'],yt:'仰臥抬腿 leg raise 教學'},
  tap:{name:'棒式肩觸',en:'Plank Shoulder Tap',lv:2,bpm:60,cues:['高棒式，雙腳略打開更穩','單手輕觸對側肩膀','髖部盡量不晃動','左右交替'],yt:'棒式肩觸 plank shoulder tap 教學'},
  bicycle:{name:'單車式捲腹',en:'Bicycle Crunch',lv:2,bpm:60,cues:['下背貼地','手肘碰對側膝蓋','另一腳伸直不碰地','轉動上背，不是只動手'],yt:'單車式捲腹 bicycle crunch 教學'},
@@ -283,7 +288,7 @@ const LV={0:['全部','var(--accent)'],1:['初階','var(--l1)'],2:['中階','var
 const TARGET=15*60;
 const COURSES=[
  {id:'c1',lv:1,name:'核心入門',desc:'15 分鐘，每次隨機排列',rest:20,eights:4,random:true,
-  pool:['bridge','situp','bridgemarch','plank','elbowknee']},
+  pool:['bridge','legraise45','bridgemarch','plank','elbowknee']},
  {id:'c2',lv:2,name:'核心強化',desc:'15 分鐘，每次隨機排列',rest:15,eights:6,random:true,
   pool:['hipraise','elbowknee','bicycle','tap','plank','bridgemarch','situp']},
  {id:'c3',lv:3,name:'核心挑戰',desc:'15 分鐘，每次隨機排列',rest:10,eights:8,random:true,
@@ -317,11 +322,20 @@ const still=id=>`<div class="lt" data-lt="${id}"></div>`;
 function mountLottie(el,id,play){
   el.innerHTML='';
   if(!window.lottie){el.innerHTML=`<div class="ltfb">${NM(id)}</div>`;return null}
-  const a=lottie.loadAnimation({container:el,renderer:'svg',loop:true,autoplay:!!play,path:'lottie/'+id+'.json',
+  const ex=EX[id],seg=ex.seg;
+  const a=lottie.loadAnimation({container:el,renderer:'svg',loop:!seg,autoplay:!!play&&!seg,path:'lottie/'+(ex.file||id)+'.json',
     rendererSettings:{preserveAspectRatio:'xMidYMid meet'}});
   a.addEventListener('DOMLoaded',()=>{
     fitAnim(a,el,id);
-    if(play){a.setSpeed(S.speed);a.goToAndPlay(0,true)} else a.goToAndStop(Math.floor(a.totalFrames*.35),true);
+    if(seg){
+      // Play only part of the clip, back and forth (e.g. legs 90° ↔ 45°)
+      if(!play){a.goToAndStop(seg[0],true);return}
+      let fwd=true;
+      a.setSpeed(S.speed*(ex.rate||1));
+      a.addEventListener('complete',()=>{fwd=!fwd;a.playSegments(fwd?seg:[seg[1],seg[0]],true)});
+      a.playSegments(seg,true);
+    }
+    else if(play){a.setSpeed(S.speed);a.goToAndPlay(0,true)} else a.goToAndStop(Math.floor(a.totalFrames*.35),true);
   });
   return a;
 }
@@ -331,8 +345,9 @@ function fitAnim(a,el,id){
   let box=FIT[id];
   if(!box){
     let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;
+    const seg=EX[id].seg,f0=seg?seg[0]:0,span=seg?seg[1]-seg[0]:a.totalFrames;
     for(let k=0;k<12;k++){
-      a.goToAndStop(Math.floor(a.totalFrames*k/12),true);
+      a.goToAndStop(Math.floor(f0+span*k/12),true);
       let b;try{b=g.getBBox()}catch(e){return}
       if(!b.width)continue;
       x1=Math.min(x1,b.x);y1=Math.min(y1,b.y);x2=Math.max(x2,b.x+b.width);y2=Math.max(y2,b.y+b.height);
