@@ -108,12 +108,14 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 #run:not(.withvideo) .vid{display:none}
 #run.withvideo .rname{font-size:24px;margin-bottom:6px}
 #run.withvideo .mid{display:flex;gap:12px;align-items:center}
-#run.withvideo .rstage{flex:0 0 52%;max-height:none;min-height:0;aspect-ratio:auto;align-self:stretch}
+#run.withvideo .rstage{flex:0 0 46%;max-height:none;min-height:0;aspect-ratio:auto;align-self:stretch}
 #run.withvideo .mid{flex:1;min-height:120px}
-#run.withvideo .beat{font-size:84px}
+#run.withvideo .beat{font-size:clamp(96px,min(40vw,22vh),180px)}
+#run.withvideo .beat.two{font-size:clamp(70px,min(27vw,15vh),120px)}
+#run.withvideo .eight{font-size:24px}#run.withvideo .eight small{font-size:17px}
 #run.withvideo .counter{flex:1;flex-direction:column;align-items:flex-end;margin-top:0}
-#run.withvideo .dots i{width:12px;height:12px}
-#run.withvideo .dots{gap:4px;margin:6px 0}
+#run.withvideo .dots i{width:16px;height:16px}
+#run.withvideo .dots{gap:5px;margin:8px 0}
 .pl{width:100%;background:#0F1115;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px;font:inherit;font-size:14px}
 .plrow{flex-direction:column;align-items:stretch}
 .plmsg{font-size:12px;color:var(--mute)}
@@ -225,9 +227,10 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
   #run.withvideo .rstage{width:13vw;aspect-ratio:4/3;max-height:none;min-height:0;border-radius:10px}
   #run.withvideo .rstage .tag{display:none}
   #run.withvideo .counter{flex-direction:column;align-items:flex-start;margin:0;gap:0}
-  #run.withvideo .beat{font-size:56px}
-  #run.withvideo .eight{font-size:15px}#run.withvideo .eight small{font-size:12px}
-  #run.withvideo .dots{margin:4px 0}#run.withvideo .dots i{width:10px;height:10px}
+  #run.withvideo .beat{font-size:clamp(64px,24vh,110px)}
+  #run.withvideo .beat.two{font-size:clamp(52px,18vh,84px)}
+  #run.withvideo .eight{font-size:19px}#run.withvideo .eight small{font-size:14px}
+  #run.withvideo .dots{margin:6px 0;gap:4px}#run.withvideo .dots i{width:14px;height:14px}
   #run.withvideo .ctrls{grid-column:1/3;display:flex;gap:8px;margin:0;padding:0}
   #run.withvideo .ctrls button{flex:1;background:#FFFFFF22;color:#fff;padding:8px 0;border-radius:10px;font-size:20px;line-height:1}
   #run.withvideo .ctrls .pp{background:var(--accent);color:#14161B}
@@ -594,7 +597,7 @@ function frame(now){
   }else{
     const left=Math.ceil(R.dur-el/1000);
     if(left!==R.last&&!R.paused){
-      R.last=left;$('#beat').textContent=Math.max(left,0);$('#beat').className='beat rest';
+      R.last=left;$('#beat').textContent=Math.max(left,0);$('#beat').className='beat rest'+(left>9?' two':'');
       $('#eight').innerHTML=`<small>秒後開始</small>`;
       if(left<=3&&left>0) tone(660,.12,.3);
     }
