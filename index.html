@@ -275,7 +275,7 @@ const EX={
  bridgemarch:{name:'仰臥交替抬腿',en:'Alternating Leg Lift',lv:1,bpm:50,cues:['仰躺屈膝，雙腳踩地','單腳收膝再往上伸直','放回後換腳','下背貼地、腹部出力'],yt:'仰臥交替抬腿 教學'},
  situp:{name:'仰臥起坐',en:'Sit Up',lv:1,bpm:50,cues:['屈膝，雙腳踩穩','用腹部帶起上半身','下背慢慢放回地面','不要用手拉脖子'],yt:'仰臥起坐 正確姿勢'},
  plank:{name:'棒式抬腿',en:'Leg Pull Low Plank',lv:2,bpm:60,cues:['手肘在肩膀正下方','身體成一直線','單腳輪流往上抬','髖部不要歪、不要塌腰'],yt:'棒式抬腿 plank leg lift 教學'},
- elbowknee:{name:'肘碰膝捲腹',en:'Elbow to Knee Crunch',lv:2,bpm:50,cues:['手扶頭側，不拉脖子','捲起時手肘碰對側膝','左右交替','吐氣捲起、吸氣放下'],yt:'肘碰膝捲腹 elbow to knee crunch'},
+ elbowknee:{name:'翹腳捲腹',en:'Cross-body Crunch',lv:2,bpm:50,swap:true,cues:['仰躺，一腳踩地，另一腳踝跨在膝上','手扶頭側，不拉脖子','捲起時用對側手肘碰翹起的膝蓋','做到一半聽到「換腳」再換邊'],yt:'翹腳捲腹 cross body crunch 教學'},
  legraise45:{name:'半程仰臥抬腿',en:'Half Leg Raise',lv:1,bpm:50,file:'hipraise',seg:[40,62],rate:.6,cues:['仰躺，雙腿併攏伸直抬到垂直','慢慢放到約 45 度','再用下腹拉回垂直','下背貼地，不甩腿'],yt:'仰臥抬腿 45度 教學'},
  hipraise:{name:'仰臥抬腿',en:'Lying Leg Raise',lv:2,bpm:50,cues:['仰躺，雙腿併攏伸直','用下腹把雙腿抬到垂直','下放時慢慢控制、腳不碰地','下背貼地，不甩腿'],yt:'仰臥抬腿 leg raise 教學'},
  tap:{name:'棒式肩觸',en:'Plank Shoulder Tap',lv:2,bpm:60,cues:['高棒式，雙腳略打開更穩','單手輕觸對側肩膀','髖部盡量不晃動','左右交替'],yt:'棒式肩觸 plank shoulder tap 教學'},
@@ -558,6 +558,7 @@ function enter(ph){
     if(fig==='__rest'){$('#rfig').innerHTML='<div class="breath"><div class="ring"></div><div class="core"></div><span class="bin">吸氣</span><span class="bout">吐氣</span></div>'}
     else R.anim=mountLottie($('#rfig'),it.id,true);
     R.figId=fig}
+  $('#rfig').style.transform='';
   $('#rtag').hidden=ph==='work';$('#rtag').textContent=ph==='prep'?'第一個':'休息・深呼吸';
   const nx=R.q[R.i+1];
   $('#next').innerHTML=ph==='work'?(nx?`<span>下一個：<b>${NM(nx.id)}</b></span>`:'<b>最後一個動作！</b>')+`<span>${it.e} 個八拍</span>`:`<span>${ex.cues[0]}</span>`;
@@ -579,7 +580,11 @@ function frame(now){
     if(b!==R.last&&b<total&&!R.paused){
       R.last=b;const n=b%8+1,eight=Math.floor(b/8)+1;
       click(n===1);
-      if(n===1&&b>0) say(eight===it.e?'最後一個八拍':'第'+ZH[eight]+'個八拍');
+      // One-sided exercises: switch legs halfway (mirror the animation)
+      const swapAt=ex.swap&&it.e>1?Math.floor(it.e/2)+1:0,sw=swapAt&&eight>=swapAt;
+      $('#rfig').style.transform=sw?'scaleX(-1)':'';
+      if(ex.swap){$('#rtag').hidden=!sw;$('#rtag').textContent='換腳'}
+      if(n===1&&b>0) say((eight===swapAt?'換腳，':'')+(eight===it.e?'最後一個八拍':'第'+ZH[eight]+'個八拍'));
       $('#beat').textContent=n;$('#beat').className='beat';
       [...$('#dots').children].forEach((d,k)=>d.className=k<n-1?'on':k===n-1?'now':'');
       $('#eight').innerHTML=`第 ${eight} <small>/ ${it.e} 個八拍</small>`;
