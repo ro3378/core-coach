@@ -285,16 +285,16 @@ const EX={
  planklunge:{name:'棒式弓箭步',en:'Plank Lunges',lv:3,bpm:50,cues:['高棒式起始','單腳跨到同側手旁邊','回到棒式再換腳','核心穩住、臀部不翹'],yt:'plank lunges 教學'}
 };
 const LV={0:['全部','var(--accent)'],1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)']};
-const TARGET=15*60;
+const MIN=30,TARGET=MIN*60;  // course length (minutes)
 const COURSES=[
- {id:'c1',lv:1,name:'核心入門',desc:'15 分鐘，每次隨機排列',rest:20,eights:4,random:true,
+ {id:'c1',lv:1,name:'核心入門',desc:MIN+' 分鐘，每次隨機排列',rest:20,eights:4,random:true,
   pool:['bridge','legraise45','bridgemarch','plank','elbowknee']},
- {id:'c2',lv:2,name:'核心強化',desc:'15 分鐘，每次隨機排列',rest:15,eights:6,random:true,
+ {id:'c2',lv:2,name:'核心強化',desc:MIN+' 分鐘，每次隨機排列',rest:15,eights:6,random:true,
   pool:['hipraise','elbowknee','bicycle','tap','plank','bridgemarch','situp']},
- {id:'c3',lv:3,name:'核心挑戰',desc:'15 分鐘，每次隨機排列',rest:10,eights:8,random:true,
+ {id:'c3',lv:3,name:'核心挑戰',desc:MIN+' 分鐘，每次隨機排列',rest:10,eights:8,random:true,
   pool:['climber','cocoon','bicycle','planklunge','tap','plank','hipraise','elbowknee']},
- {id:'all',lv:0,name:'全部課程',desc:'初階 → 中階 → 高階的代表動作一次做完',rest:15,
-  items:[['bridge',4],['situp',4],['bridgemarch',4],['plank',4],['hipraise',4],['elbowknee',4],['bicycle',4],['tap',4],['plank',4],['bridgemarch',4],['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]]}
+ {id:'all',lv:0,name:'全部課程',desc:'初階 → 中階 → 高階的代表動作做兩輪',rest:15,
+  items:[0,1].flatMap(()=>[['bridge',4],['situp',4],['bridgemarch',4],['plank',4],['hipraise',4],['elbowknee',4],['bicycle',4],['tap',4],['plank',4],['bridgemarch',4],['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]])}
 ];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function buildQueue(c){
@@ -384,7 +384,7 @@ function home(){
   <div class="hhead"><h1>核心訓練</h1></div><p class="sub">按開始就不用再碰手機</p>
   <div class="clist">${COURSES.map(c=>`<div class="ccard">
     <button class="cbody" data-c="${c.id}"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
-      <span class="ctext"><b>${c.name}</b><small>${c.random?'約 15 分鐘・每次隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</small></span></button>
+      <span class="ctext"><b>${c.name}</b><small>${c.random?'約 '+MIN+' 分鐘・每次隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</small></span></button>
     <button class="go" data-go="${c.id}">▶ 開始</button>
   </div>`).join('')}</div>
   <details class="fold" data-fold="set"${FOLD.set?' open':''}><summary>設定・邊看影片邊訓練<span>${S.speed===1?'標準':S.speed<1?'慢':'快'}速・${parseYT(S.pl)&&!parseYT(S.pl).bad?'已設影片':'無影片'}</span></summary>
@@ -413,7 +413,7 @@ function courseView(c,keep,stay){
   const ids=c.random?c.pool:[...new Set(c.items.map(x=>x[0]))];
   $('#app').innerHTML=`<div class="cview"><div class="cleft"><button class="back" data-home>‹ 返回</button>
   <div class="chead"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h1>${c.name}</h1></div>
-  <p class="sub">${c.random?'約 15 分鐘・每次隨機順序':c.items.length+' 個動作・約 '+fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
+  <p class="sub">${c.random?'約 '+MIN+' 分鐘・每次隨機順序':c.items.length+' 個動作・約 '+fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
   <button class="big bigcta" data-start="${c.id}"><span>▶ 開始訓練</span><small>${c.random?'每次開始都會重新隨機排列':'依固定順序進行'}</small></button>
   <p class="note lnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div><div class="cright">
   <div class="sec">這堂課會做的動作（${ids.length}）</div>
