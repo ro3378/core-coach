@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 <rect width="512" height="512" fill="#14161B"/>
-<text x="256" y="300" font-family="Noto Sans CJK TC, sans-serif" font-weight="900" font-size="230" text-anchor="middle" fill="#F2F0EA">8</text>
-<g><circle cx="151" cy="372" r="14" fill="#FF8A4C"/><circle cx="186" cy="372" r="14" fill="#FF8A4C"/><circle cx="221" cy="372" r="14" fill="#FF8A4C"/><circle cx="256" cy="372" r="17" fill="#FFC24C"/><circle cx="291" cy="372" r="14" fill="#2D313A"/><circle cx="326" cy="372" r="14" fill="#2D313A"/><circle cx="361" cy="372" r="14" fill="#2D313A"/></g>
+<circle cx="256" cy="256" r="150" fill="none" stroke="#2D313A" stroke-width="30"/>
+<circle cx="256" cy="256" r="150" fill="none" stroke="#FF8A4C" stroke-width="30" stroke-linecap="round" stroke-dasharray="660 943" transform="rotate(-90 256 256)"/>
+<line x1="168" y1="338" x2="352" y2="338" stroke="#2D313A" stroke-width="8" stroke-linecap="round"/>
+<g fill="none" stroke="#F2F0EA" stroke-linecap="round" stroke-linejoin="round">
+<path d="M200 250 L346 314" stroke-width="30"/>
+<path d="M202 256 L202 318" stroke-width="22"/></g>
+<circle cx="163" cy="234" r="23" fill="#F2F0EA"/>
 </svg>
