@@ -542,18 +542,43 @@ function parseYT(u){
 function plStatus(){const p=parseYT(S.pl);return !p?'不填就只播拍子和語音':p.bad?'⚠️ 看不懂這個網址，請貼 YouTube 播放清單或影片連結':p.list?'✓ 播放清單已設定，按開始訓練就會一起播放':'✓ 影片已設定，按開始訓練就會一起播放'}
 let YTP=null,ytReady=false,ytKey='',ytOk=false,pendingPlay=false;
 window.onYouTubeIframeAPIReady=()=>{ytReady=true;buildPlayer()};
+/* Resume: remember which video and how far in (per playlist/video URL) in localStorage `core-yt` */
+let ytOrig=null,ytShuf=false;
+function ytLoad(){try{return JSON.parse(localStorage.getItem('core-yt')||'null')}catch(e){return null}}
+function ytSave(atStart){
+  if(!YTP||!ytOk)return;
+  try{const v=(YTP.getVideoData()||{}).video_id;if(!v)return;
+    const t=atStart?0:Math.max(0,(YTP.getCurrentTime()||0)-3);
+    // Index in the playlist's original order, so it still works when shuffle is on
+    const oi=ytOrig?ytOrig.indexOf(v):YTP.getPlaylistIndex();
+    localStorage.setItem('core-yt',JSON.stringify({key:ytKey,v,t:Math.round(t),oi}))}catch(e){}
+}
+setInterval(()=>{try{if(YTP&&ytOk&&YTP.getPlayerState()===1)ytSave()}catch(e){}},5000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')ytSave()});
 function buildPlayer(){
   const p=parseYT(S.pl);
   if(!ytReady||!p||p.bad){return}
   const key=JSON.stringify(p); if(YTP&&key===ytKey) return;
-  ytKey=key;
+  ytKey=key;ytOrig=null;ytShuf=false;
   try{YTP&&YTP.destroy()}catch(e){}
   ytOk=false;if(!document.getElementById('yt')){const d=document.createElement('div');d.id='yt';$('#ytwrap').appendChild(d)}
   const pv={playsinline:1,rel:0,modestbranding:1,origin:location.origin};
   if(p.list){pv.listType='playlist';pv.list=p.list}
   const opt={width:'100%',height:'100%',playerVars:pv};if(p.v)opt.videoId=p.v;
   YTP=new YT.Player('yt',Object.assign(opt,{
-    events:{onReady:()=>{ytOk=true;try{if(p.list&&S.shuffle)YTP.setShuffle(true)}catch(e){};if(pendingPlay&&R&&!R.paused){try{YTP.playVideo()}catch(e){}}pendingPlay=false},
+    events:{onReady:()=>{ytOk=true;
+      const s=ytLoad();
+      try{if(s&&s.key===key&&(s.t>0||s.oi>0)){
+        if(p.list)YTP.cuePlaylist({listType:'playlist',list:p.list,index:Math.max(0,s.oi|0),startSeconds:s.t});
+        else YTP.cueVideoById({videoId:p.v,startSeconds:s.t});
+      }}catch(e){}
+      if(pendingPlay&&R&&!R.paused){try{YTP.playVideo()}catch(e){}}pendingPlay=false},
+    onStateChange:e=>{
+      // Note the playlist's original order once, then turn on shuffle if wanted
+      if(p.list&&!ytOrig){try{const pl=YTP.getPlaylist();if(pl&&pl.length){ytOrig=pl.slice();if(S.shuffle&&!ytShuf){ytShuf=true;YTP.setShuffle(true)}}}catch(err){}}
+      if(e.data===2)ytSave();
+      if(e.data===0&&!p.list)ytSave(true);  // single video finished: start over next time
+    },
     onError:()=>{$('#note').textContent='有影片不允許在外部網站播放，已跳到下一部';try{YTP.nextVideo()}catch(e){}}}}));
 }
 (function(){const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)})();
