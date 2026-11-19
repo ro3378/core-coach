@@ -28,14 +28,17 @@ Claude Code 專案筆記：每個 session 開始時會自動讀取這份檔案�
 - `:root` 顏色 token：`--bg #14161B`、`--panel #1E2128`、`--line #2D313A`、`--text #F2F0EA`、
   `--mute #9AA0AB`、`--accent #FF8A4C`（橘）、`--accent2 #FFC24C`（黃）、`--ok #5BD49A`（綠）。
 - `const EX`：所有動作（名稱、等級、bpm、口令 cues、YouTube 搜尋字、動畫檔）。
-- `const COURSES`：課程（核心入門／強化／挑戰／全部），每堂約 30 分鐘（`MIN=30`），休息秒數、八拍數。
+- `const COURSES`：課程（核心入門／強化／挑戰／全部），休息秒數、八拍數。長度由設定 `S.mins`（15／20／30，預設 20）決定，`buildQueue()` 排到接近這個長度。
+- `const WARM`：每堂課前後的 4 個伸展（暖身／收操）。`const BLOCK`：側棒式－棒式－鳥狗式，永遠排在一起。
+- 停留動作（`hold` 秒數，`sides:true` 左右各一次）倒數秒數、不跟拍子；伸展是 `stretch:true`。
+- YouTube 續播：`ytSave()` 把目前影片和秒數存在 localStorage `core-yt`，下次同網址從那裡接著播。
 - 訓練畫面是 `#run`；有影片時會加上 `.withvideo` class。
 - 版面三種情況，CSS 分開寫：
   1. 直式（預設規則）
   2. 橫式、沒影片：`@media (orientation:landscape) and (max-height:600px)` 裡的 `#run:not(.withvideo)`
   3. 橫式、有影片：同一個 media query 裡的 `#run.withvideo`，影片全螢幕，右下角半透明面板
 - 節拍顯示：`#beat`（大數字）、`#dots`（8 個節拍點）、`#eight`（「第 N / M 個八拍」）。
-  休息倒數是兩位數時，`#beat` 會加上 `.two` class 縮小字級。
+  休息倒數和停留倒數是兩位數時，`#beat` 會加上 `.two` class 縮小字級。
 
 ## 目前狀態（最近完成的工作）
 

@@ -666,7 +666,7 @@ function frame(now){
     // Timed hold / stretch: count down seconds; one-sided holds switch sides halfway
     const dur=R.dur*1000,left=Math.ceil(R.dur-el/1000);
     if(left!==R.last&&!R.paused){
-      R.last=left;$('#beat').textContent=Math.max(left,0);$('#beat').className='beat';
+      R.last=left;$('#beat').textContent=Math.max(left,0);$('#beat').className='beat'+(left>9?' two':'');
       $('#eight').innerHTML=`<small>${ex.stretch?'伸展':'撐住'}・剩餘秒數</small>`;
       if(ex.sides){const sw=el>=dur/2;$('#rfig').style.transform=sw?'scaleX(-1)':'';$('#rtag').hidden=false;$('#rtag').textContent=sw?'換邊':'第一邊';
         if(sw&&!R.swapSaid){R.swapSaid=true;chime();say('換邊')}}
