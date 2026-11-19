@@ -81,6 +81,7 @@ h1{font-size:26px;font-weight:900;margin:4px 0 2px;letter-spacing:.5px}
 .rstage{background:var(--card);border-radius:20px;overflow:hidden;flex:0 1 auto;aspect-ratio:4/3;max-height:50vh;background:#fff;min-height:150px;justify-content:center;display:flex;align-items:center;position:relative}
 .lt{width:100%;height:100%}
 .lt svg{display:block}
+.ltimg{width:100%;height:100%;object-fit:contain;display:block}
 .ltfb{display:flex;align-items:center;justify-content:center;height:100%;color:#333;font-weight:700}
 .rstage .tag{position:absolute;left:12px;top:10px;background:#14161BCC;color:#fff;padding:4px 10px;border-radius:99px;font-size:13px;font-weight:700}
 .counter{display:flex;align-items:flex-end;justify-content:space-between;margin-top:12px;gap:12px}
@@ -289,38 +290,74 @@ const EX={
  bicycle:{name:'單車式捲腹',en:'Bicycle Crunch',lv:2,bpm:60,cues:['下背貼地','手肘碰對側膝蓋','另一腳伸直不碰地','轉動上背，不是只動手'],yt:'單車式捲腹 bicycle crunch 教學'},
  cocoon:{name:'蜷縮式',en:'Cocoons',lv:3,bpm:50,cues:['仰躺，手腳伸直','同時收腿、捲起上半身','手往前抱膝','慢慢伸展回到起始'],yt:'cocoons exercise 教學'},
  climber:{name:'登山者',en:'Running Plank',lv:3,bpm:100,cues:['高棒式起始，手在肩下','膝蓋輪流往胸口帶','臀部不要翹高','跟著拍子保持節奏'],yt:'登山者 mountain climber 教學'},
- planklunge:{name:'棒式弓箭步',en:'Plank Lunges',lv:3,bpm:50,cues:['高棒式起始','單腳跨到同側手旁邊','回到棒式再換腳','核心穩住、臀部不翹'],yt:'plank lunges 教學'}
+ planklunge:{name:'棒式弓箭步',en:'Plank Lunges',lv:3,bpm:50,cues:['高棒式起始','單腳跨到同側手旁邊','回到棒式再換腳','核心穩住、臀部不翹'],yt:'plank lunges 教學'},
+ // Fit Girl pack (Dima Oris) + Woman Workout pack (Dima Oris)
+ deadbug:{name:'死蟲式',en:'Dead Bug',lv:1,bpm:40,cues:['仰躺，雙手朝天、膝蓋彎成 90 度','下背緊貼地面','對側手腳緩慢延伸再收回','左右交替，腰部不要拱起'],yt:'死蟲式 dead bug 教學'},
+ birddog:{name:'鳥狗式',en:'Bird Dog',lv:1,bpm:40,cues:['四足跪姿，手在肩下、膝在髖下','對側手腳同時平穩伸直','骨盆與軀幹保持穩定不歪','收回後換邊，左右交替'],yt:'鳥狗式 bird dog 教學'},
+ plankhold:{name:'棒式',en:'Plank',lv:1,hold:30,cues:['手掌或手肘撐地，在肩膀正下方','頭到腳跟成一直線，不塌腰','收緊腹部與臀部，自然呼吸','容易晃或腰痠可先改跪姿棒式'],yt:'棒式 平板支撐 正確姿勢'},
+ sideplank:{name:'側棒式',en:'Side Plank',lv:1,hold:20,sides:true,cues:['側躺，手肘在肩膀正下方','把臀部抬起，身體成一直線','臀部保持抬起、不往下掉','聽到「換邊」換另一側'],yt:'側棒式 side plank 教學'},
+ leginout:{name:'坐姿收腿',en:'Leg In & Out',lv:2,bpm:50,cues:['坐姿，上身微微後仰、雙手撐地','雙腳離地，膝蓋收向胸口','再把雙腿往前伸直','腳不碰地，腹部持續出力'],yt:'坐姿收腿 leg in and out 教學'},
+ sidecrunch:{name:'側捲腹',en:'Side Crunch',lv:2,bpm:50,swap:true,cues:['仰躺，雙膝併攏倒向一側','手扶頭側，不拉脖子','用腹部把肩膀捲離地面','聽到「換腳」倒向另一側'],yt:'側捲腹 side crunch 教學'},
+ revcrunch:{name:'反向捲腹',en:'Reverse Crunch',lv:2,bpm:50,cues:['仰躺，雙手放身體兩側','屈膝把雙腿抬起','用下腹把臀部捲離地面','慢慢放回，不要甩腿'],yt:'反向捲腹 reverse crunch 教學'},
+ legraise:{name:'單腳交替抬腿',en:'Alternating Leg Raise',lv:2,bpm:50,cues:['仰躺，雙腿伸直','單腳伸直抬到垂直','慢慢放下再換腳','下背貼地，腹部出力'],yt:'仰臥 交替抬腿 教學'},
+ crunch:{name:'上腹捲腹',en:'Abdominal Crunch',lv:2,bpm:50,cues:['仰躺屈膝，雙腳踩地','雙手往前伸','用上腹把肩膀捲離地面','吐氣捲起、吸氣放下'],yt:'捲腹 crunch 正確姿勢'},
+ crunchkick:{name:'捲腹踢腿',en:'Crunch Kicks',lv:2,bpm:50,cues:['仰躺，雙腳離地屈膝','雙腿往前踢直','再把膝蓋收回','下背貼地、腳不碰地'],yt:'crunch kicks 教學'},
+ flutter:{name:'剪刀腳',en:'Flutter Kicks',lv:3,bpm:80,cues:['仰躺，雙腿伸直微微離地','雙腳小幅度上下交替擺動','下背緊貼地面','手可放在臀部下方輔助'],yt:'剪刀腳 flutter kicks 教學'},
+ vcrunch:{name:'V 字捲腹',en:'V Crunch',lv:3,bpm:50,cues:['仰躺，手腳伸直','同時收腿、捲起上半身成 V 字','再慢慢伸展回到起始','腳不碰地'],yt:'V字捲腹 v crunch 教學'},
+ legdrop:{name:'雙腿下放',en:'Leg Drops',lv:3,bpm:50,cues:['仰躺，雙腿併攏抬到垂直','慢慢往下放、腳不碰地','用下腹把腿拉回垂直','下背貼地，不甩腿'],yt:'leg drops 教學'},
+ // Warm-up / cool-down stretches (May Fit video, CC BY; Relaxing Yoga pack by Anicon Studio)
+ twistr:{name:'躺姿扭轉（右）',en:'Supine Spinal Twist (R)',lv:4,stretch:true,hold:30,img:'img/twist-r.jpg',src:'https://www.youtube.com/watch?v=78Cpioi-LS8&t=539',cues:['仰躺，右膝彎曲放至身體左側','左手放在右膝上','右手往右側地板延伸','視線也看向右側']},
+ twistl:{name:'躺姿扭轉（左）',en:'Supine Spinal Twist (L)',lv:4,stretch:true,hold:30,img:'img/twist-l.jpg',src:'https://www.youtube.com/watch?v=78Cpioi-LS8&t=556',cues:['換邊，左膝彎曲放至身體右側','右手放在左膝上','左手往左側地板延伸','放鬆腰部與脊椎']},
+ updog:{name:'上犬式',en:'Upward-Facing Dog',lv:4,stretch:true,hold:30,src:'https://www.youtube.com/watch?v=78Cpioi-LS8&t=572',cues:['趴姿起身，雙手推地','上半身向前向上延伸','可以微微左右轉動','伸展與放鬆腹部前側']},
+ catcow:{name:'嬰兒式＋貓牛式',en:'Child Pose & Cat Cow',lv:4,stretch:true,hold:30,src:'https://www.youtube.com/watch?v=78Cpioi-LS8&t=585',cues:['先向後坐回做嬰兒式延展','回到四足跪姿做貓牛式','吸氣時拱背、吐氣時抬頭延伸脊椎','重複循環，放鬆背部與核心']}
 };
-const LV={0:['全部','var(--accent)'],1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)']};
-const MIN=30,TARGET=MIN*60;  // course length (minutes)
+const LV={0:['全部','var(--accent)'],1:['初階','var(--l1)'],2:['中階','var(--l2)'],3:['高階','var(--l3)'],4:['伸展','var(--ok)']};
+// Warm-up and cool-down: these 4 stretches at the start and end of every course
+const WARM=['twistr','twistl','updog','catcow'];
+// Plank always comes with side plank and bird dog on either side
+const BLOCK=['sideplank','plankhold','birddog'];
 const COURSES=[
- {id:'c1',lv:1,name:'核心入門',desc:MIN+' 分鐘，每次隨機排列',rest:20,eights:4,random:true,
-  pool:['bridge','legraise45','bridgemarch','plank','elbowknee']},
- {id:'c2',lv:2,name:'核心強化',desc:MIN+' 分鐘，每次隨機排列',rest:15,eights:6,random:true,
-  pool:['hipraise','elbowknee','bicycle','tap','plank','bridgemarch','situp']},
- {id:'c3',lv:3,name:'核心挑戰',desc:MIN+' 分鐘，每次隨機排列',rest:10,eights:8,random:true,
-  pool:['climber','cocoon','bicycle','planklunge','tap','plank','hipraise','elbowknee']},
- {id:'all',lv:0,name:'全部課程',desc:'初階 → 中階 → 高階的代表動作做兩輪',rest:15,
-  items:[0,1].flatMap(()=>[['bridge',4],['situp',4],['bridgemarch',4],['plank',4],['hipraise',4],['elbowknee',4],['bicycle',4],['tap',4],['plank',4],['bridgemarch',4],['climber',8],['cocoon',6],['bicycle',6],['planklunge',6],['tap',6],['plank',8]])}
+ {id:'c1',lv:1,name:'核心入門',rest:20,eights:4,random:true,
+  pool:['bridge','legraise45','bridgemarch','plank','elbowknee','deadbug',BLOCK]},
+ {id:'c2',lv:2,name:'核心強化',rest:15,eights:6,random:true,
+  pool:['hipraise','elbowknee','bicycle','tap','plank','bridgemarch','situp','leginout','sidecrunch','revcrunch','legraise','crunch','crunchkick']},
+ {id:'c3',lv:3,name:'核心挑戰',rest:10,eights:8,random:true,
+  pool:['climber','cocoon','bicycle','planklunge','tap','plank','hipraise','elbowknee','flutter','vcrunch','legdrop','revcrunch']},
+ {id:'all',lv:0,name:'全部課程',rest:15,
+  order:[['bridge',4],['legraise45',4],['bridgemarch',4],['deadbug',4],BLOCK,['plank',4],['hipraise',4],['elbowknee',4],['revcrunch',4],['bicycle',4],['crunchkick',4],['tap',4],['climber',8],['cocoon',6],['vcrunch',6],['flutter',6],['planklunge',6],['legdrop',6]]}
 ];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-function buildQueue(c){
-  const out=[];let t=5,bag=[];
-  while(true){
-    if(!bag.length){bag=shuffle(c.pool);if(out.length&&bag[0]===out[out.length-1][0])bag.push(bag.shift())}
-    const id=bag[0],rest=out.length?restOf(c):0,left=TARGET-t-rest;
-    let e=c.eights;
-    while(e>1&&secOf(id,e)>left)e--;
-    if(secOf(id,e)>left||left<20)break;
-    bag.shift();out.push([id,e]);t+=rest+secOf(id,e);
-  }
-  return out;
+const isBlock=u=>Array.isArray(u)&&typeof u[1]==='string';
+// A pool/order entry -> list of [id, eights] (holds and stretches use 0)
+function unitItems(u,c){
+  const ids=typeof u==='string'?[u]:isBlock(u)?(Math.random()<.5?u.slice():u.slice().reverse()):[u[0]];
+  const e=typeof u!=='string'&&!isBlock(u)?u[1]:(c.eights||4);
+  return ids.map(id=>[id,EX[id].hold?0:e]);
 }
-COURSES.forEach(c=>{if(c.random)c.items=[]});
+function buildQueue(c){
+  const target=S.mins*60,warm=WARM.map(id=>[id,0]),cool=WARM.map(id=>[id,0]),core=[];
+  let bag=[],k=0,fails=0;
+  const total=extra=>seqSec([...warm,...core,...extra,...cool],c);
+  while(fails<8&&target-total([])>=20){
+    let u;
+    if(c.random){if(!bag.length)bag=shuffle(c.pool);u=bag.shift()}
+    else u=c.order[k++%c.order.length];
+    let items=unitItems(u,c);
+    const last=core.length&&core[core.length-1][0];
+    if(items[0][0]===last&&c.random){if(!bag.length)bag=shuffle(c.pool);bag.push(u);fails++;continue}
+    // Shorten a beat exercise to fit the remaining time
+    if(items.length===1&&items[0][1]>0)while(items[0][1]>1&&total(items)>target)items=[[items[0][0],items[0][1]-1]];
+    if(total(items)>target){fails++;if(!c.random)break;continue}
+    core.push(...items);fails=0;
+  }
+  return [...warm,...core,...cool];
+}
+COURSES.forEach(c=>c.items=[]);
 
 /* ---------- Settings ---------- */
-let S={speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
+let S={mins:20,speed:1,rest:0,voice:true,click:true,pl:'',shuffle:false,vpause:true};
 try{Object.assign(S,JSON.parse(localStorage.getItem('core-set')||'{}'))}catch(e){}
+if(![15,20,30].includes(S.mins))S.mins=20;
 const saveS=()=>{try{localStorage.setItem('core-set',JSON.stringify(S))}catch(e){}};
 
 const NM=id=>EX[id].name;
@@ -328,8 +365,9 @@ const NM=id=>EX[id].name;
 const still=id=>`<div class="lt" data-lt="${id}"></div>`;
 function mountLottie(el,id,play){
   el.innerHTML='';
-  if(!window.lottie){el.innerHTML=`<div class="ltfb">${NM(id)}</div>`;return null}
   const ex=EX[id],seg=ex.seg;
+  if(ex.img){el.innerHTML=`<img class="ltimg" src="${ex.img}" alt="${NM(id)}">`;return null}
+  if(!window.lottie){el.innerHTML=`<div class="ltfb">${NM(id)}</div>`;return null}
   const a=lottie.loadAnimation({container:el,renderer:'svg',loop:!seg,autoplay:!!play&&!seg,path:'lottie/'+(ex.file||id)+'.json',
     rendererSettings:{preserveAspectRatio:'xMidYMid meet'}});
   a.addEventListener('DOMLoaded',()=>{
@@ -369,10 +407,15 @@ function fitAnim(a,el,id){
 function hydrate(){document.querySelectorAll('.lt[data-lt]').forEach(el=>mountLottie(el,el.dataset.lt,false))}
 /* ---------- Helpers ---------- */
 const $=s=>document.querySelector(s);
-const secOf=(id,e)=>e*8*60/(EX[id].bpm*S.speed);
+// Seconds an exercise takes: timed holds use their hold time (both sides if `sides`), beat exercises their eight-counts
+const secOf=(id,e)=>{const x=EX[id];return x.hold?x.hold*(x.sides?2:1):e*8*60/(x.bpm*S.speed)};
 const restOf=c=>S.rest||c.rest;
+// Break between two items: a short 5-second change-over around stretches, the course's rest otherwise
+const gap=(a,b,c)=>EX[a].stretch||EX[b].stretch?5:restOf(c);
+// Whole run length: 5 s get-ready + items + breaks
+const seqSec=(items,c)=>items.reduce((t,[id,e],i)=>t+secOf(id,e)+(i?gap(items[i-1][0],id,c):0),5);
 const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
-const courseSec=c=>c.items.reduce((a,[id,e])=>a+secOf(id,e),0)+restOf(c)*(c.items.length-1);
+const courseSec=c=>seqSec(c.items,c);
 const sideTxt=s=>s==='L'?'（左側）':s==='R'?'（右側）':'';
 const ZH=['零','一','二','三','四','五','六','七','八','九','十'];
 
@@ -391,11 +434,12 @@ function home(){
   <div class="hhead"><h1>核心訓練</h1></div><p class="sub">按開始就不用再碰手機</p>
   <div class="clist">${COURSES.map(c=>`<div class="ccard">
     <button class="cbody" data-c="${c.id}"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span>
-      <span class="ctext"><b>${c.name}</b><small>${c.random?'約 '+MIN+' 分鐘・每次隨機':c.items.length+' 個動作・'+fmt(courseSec(c))}</small></span></button>
+      <span class="ctext"><b>${c.name}</b><small>約 ${S.mins} 分鐘・${c.random?'每次隨機':'固定順序'}</small></span></button>
     <button class="go" data-go="${c.id}">▶ 開始</button>
   </div>`).join('')}</div>
-  <details class="fold" data-fold="set"${FOLD.set?' open':''}><summary>設定・邊看影片邊訓練<span>${S.speed===1?'標準':S.speed<1?'慢':'快'}速・${parseYT(S.pl)&&!parseYT(S.pl).bad?'已設影片':'無影片'}</span></summary>
+  <details class="fold" data-fold="set"${FOLD.set?' open':''}><summary>設定・邊看影片邊訓練<span>${S.mins} 分鐘・${S.speed===1?'標準':S.speed<1?'慢':'快'}速・${parseYT(S.pl)&&!parseYT(S.pl).bad?'已設影片':'無影片'}</span></summary>
   <div class="settings">
+    <div class="row"><span>課程長度</span>${segCtl('mins',[[15,'15 分'],[20,'20 分'],[30,'30 分']])}</div>
     <div class="row"><span>節奏速度</span>${segCtl('speed',[[0.75,'慢'],[1,'標準'],[1.25,'快']])}</div>
     <div class="row"><span>休息時間</span>${segCtl('rest',[[0,'預設'],[10,'10秒'],[20,'20秒'],[30,'30秒']])}</div>
     <div class="row"><span>語音提示</span>${segCtl('voice',[[true,'開'],[false,'關']])}</div>
@@ -414,16 +458,17 @@ function home(){
 document.addEventListener('toggle',e=>{const d=e.target;if(!d.dataset||!d.dataset.fold)return;FOLD[d.dataset.fold]=d.open;if(d.open&&d.dataset.fold==='lib')d.querySelectorAll('.lt[data-lt]').forEach(el=>{if(!el.firstChild)mountLottie(el,el.dataset.lt,false)})},true);
 function courseView(c,keep,stay){
   const y0=scrollY;VIEW='course';
-  if(c.random&&!keep){c.items=buildQueue(c);c._ran=false}
+  if(!keep||!c.items.length){c.items=buildQueue(c);c._ran=false}
   stopPreview();
   $('#app').classList.add('fit');
-  const ids=c.random?c.pool:[...new Set(c.items.map(x=>x[0]))];
+  const core=[...new Set((c.random?c.pool:c.order).flatMap(u=>typeof u==='string'?[u]:isBlock(u)?u:[u[0]]))];
+  const ids=[...WARM,...core];
   $('#app').innerHTML=`<div class="cview"><div class="cleft"><button class="back" data-home>‹ 返回</button>
   <div class="chead"><span class="badge" style="background:${LV[c.lv][1]}">${LV[c.lv][0]}</span><h1>${c.name}</h1></div>
-  <p class="sub">${c.random?'約 '+MIN+' 分鐘・每次隨機順序':c.items.length+' 個動作・約 '+fmt(courseSec(c))}・休息 ${restOf(c)} 秒</p>
+  <p class="sub">約 ${S.mins} 分鐘・${c.random?'每次隨機順序':'固定順序'}・休息 ${restOf(c)} 秒・前後含暖身與收操</p>
   <button class="big bigcta" data-start="${c.id}"><span>▶ 開始訓練</span><small>${c.random?'每次開始都會重新隨機排列':'依固定順序進行'}</small></button>
   <p class="note lnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div><div class="cright">
-  <div class="sec">這堂課會做的動作（${ids.length}）</div>
+  <div class="sec">暖身／收操 ${WARM.length} 個伸展＋核心動作 ${core.length} 個</div>
   <div class="tiles">${ids.map(id=>`<button class="tile" data-x="${id}"><span class="tpic"><span class="lt" data-ltp="${id}"></span></span><b>${NM(id)}</b></button>`).join('')}</div>
   <p class="note pnote">開始後螢幕會保持常亮，建議把手機立在地上、螢幕朝向你</p></div></div>`;
   document.querySelectorAll('.lt[data-ltp]').forEach(el=>mountLottie(el,el.dataset.ltp,true));
@@ -434,10 +479,12 @@ function exView(id,side,from){
   const ex=EX[id];
   $('#app').innerHTML=`<button class="back" data-${from?'c="'+from+'"':'home'}>‹ 返回</button>
   <span class="badge" style="background:${LV[ex.lv][1]}">${LV[ex.lv][0]}</span>
-  <h1>${NM(id)}</h1><p class="sub">建議節奏 ${ex.bpm} 拍/分鐘</p>
+  <h1>${NM(id)}</h1><p class="sub">${ex.hold?`每次${ex.stretch?'伸展':'撐住'} ${ex.hold} 秒${ex.sides?'，左右各一次':''}`:`建議節奏 ${ex.bpm} 拍/分鐘`}</p>
   <div class="stage" id="stage"></div>
   <ul class="cues">${ex.cues.map(c=>`<li>${c}</li>`).join('')}</ul>
-  <a class="yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener"><i></i>在 YouTube 看教學影片</a>`;
+  ${ex.src?`<a class="yt" href="${ex.src}" target="_blank" rel="noopener"><i></i>看示範影片（May Fit）</a>`
+    :`<a class="yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener"><i></i>在 YouTube 看教學影片</a>`}
+  ${ex.img?'<p class="note">圖片取自 May Fit 影片（創用 CC 姓名標示授權）</p>':''}`;
   stopPreview();mountLottie($('#stage'),id,true);
   scrollTo(0,0);
 }
@@ -453,7 +500,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.c!==undefined&&b.classList.contains('cbody')) return courseView(COURSES.find(c=>c.id===b.dataset.c));
   if(b.classList.contains('back')){ if(b.dataset.home!==undefined) return home(); return courseView(COURSES.find(c=>c.id===b.dataset.c),true); }
   if(b.dataset.x){ const cur=COURSES.find(c=>$('[data-start="'+c.id+'"]')); return exView(b.dataset.x,b.dataset.side,cur&&cur.id); }
-  if(b.dataset.go){const c=COURSES.find(x=>x.id===b.dataset.go);if(c.random){c.items=buildQueue(c);c._ran=false}return startCourse(c)}
+  if(b.dataset.go){const c=COURSES.find(x=>x.id===b.dataset.go);c.items=buildQueue(c);c._ran=false;return startCourse(c)}
   if(b.dataset.reroll) return courseView(COURSES.find(c=>c.id===b.dataset.reroll),false,true);
   if(b.dataset.start) return startCourse(COURSES.find(c=>c.id===b.dataset.start));
 });
@@ -537,10 +584,12 @@ function startCourse(c){
   stopPreview();
   try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}
   try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(''))}catch(e){}
-  if(c.random&&c._ran)c.items=buildQueue(c);
+  if(c._ran||!c.items.length)c.items=buildQueue(c);
   c._ran=true;
-  const q=c.items.map(([id,e,sd])=>({id,e,sd}));
-  R={c,q,i:0,phase:'prep',dur:5,t0:performance.now(),paused:false,pAt:0,last:-1};
+  // Label each item warm-up / core / cool-down with its number inside that part
+  const n=c.items.length,nw=WARM.length,cnt={warm:0,core:0,cool:0};
+  const q=c.items.map(([id,e],i)=>{const part=i<nw?'warm':i>=n-nw?'cool':'core';return {id,e,part,k:++cnt[part]}});
+  R={c,q,i:0,phase:'prep',dur:5,t0:performance.now(),paused:false,pAt:0,last:-1,nCore:cnt.core};
   $('#run').classList.add('show');$('#run').classList.toggle('withvideo',videoOn()); document.body.style.overflow='hidden';
   $('#prog').innerHTML=q.map(()=>'<span></span>').join('');
   lockScreen();
@@ -550,14 +599,21 @@ function startCourse(c){
 function cur(){return R.q[R.i]}
 function beatMs(it){return 60000/(EX[it.id].bpm*S.speed)}
 function enter(ph){
-  R.phase=ph;R.t0=performance.now();R.last=-1;
-  const it=cur(),ex=EX[it.id],nm=NM(it.id);
-  if(ph==='prep'){R.dur=5;say('準備。第一個動作，'+nm)}
-  if(ph==='rest'){R.dur=restOf(R.c);chime();say('時間到，休息。下一個，'+nm)}
-  if(ph==='work'){R.dur=it.e*8*beatMs(it)/1000;say('開始')}
+  R.phase=ph;R.t0=performance.now();R.last=-1;R.swapSaid=false;
+  const it=cur(),ex=EX[it.id],nm=NM(it.id),pv=R.q[R.i-1];
+  if(ph==='prep'){R.dur=5;say('準備。先做暖身伸展，'+nm)}
+  if(ph==='rest'){
+    R.dur=gap(pv.id,it.id,R.c);chime();
+    say(pv.part==='warm'&&it.part==='core'?'暖身完成，休息一下。第一個動作，'+nm
+      :pv.part==='core'&&it.part==='cool'?'時間到。接下來收操伸展，'+nm
+      :ex.stretch?'下一個，'+nm:'時間到，休息。下一個，'+nm)}
+  if(ph==='work'){R.dur=secOf(it.id,it.e);
+    say(ex.sides?`開始，先做一邊，${ex.hold} 秒後換邊`:ex.hold?`開始，${ex.stretch?'伸展':'撐住'} ${ex.hold} 秒`:'開始')}
   $('#dots').innerHTML='<i></i>'.repeat(8);
+  $('#dots').style.visibility=ph==='work'&&ex.hold?'hidden':'';
   [...$('#prog').children].forEach((s,k)=>s.className=k<R.i?'done':k===R.i?'cur':'');
-  $('#phase').textContent=ph==='work'?`第 ${R.i+1} / ${R.q.length} 個動作`:ph==='rest'?'休息・下一個動作':'準備開始';
+  const label=it.part==='warm'?`暖身 ${it.k} / ${WARM.length}`:it.part==='cool'?`收操 ${it.k} / ${WARM.length}`:`第 ${it.k} / ${R.nCore} 個動作`;
+  $('#phase').textContent=ph==='work'?label:ph==='rest'?(ex.stretch?'下一個伸展・'+label:'休息・下一個動作'):'準備開始・'+label;
   $('#phase').style.color=ph==='work'?'var(--accent)':'var(--ok)';
   $('#rname').textContent=nm;
   const fig=ph==='rest'?'__rest':it.id;
@@ -568,7 +624,7 @@ function enter(ph){
   $('#rfig').style.transform='';
   $('#rtag').hidden=ph==='work';$('#rtag').textContent=ph==='prep'?'第一個':'休息・深呼吸';
   const nx=R.q[R.i+1];
-  $('#next').innerHTML=ph==='work'?(nx?`<span>下一個：<b>${NM(nx.id)}</b></span>`:'<b>最後一個動作！</b>')+`<span>${it.e} 個八拍</span>`:`<span>${ex.cues[0]}</span>`;
+  $('#next').innerHTML=ph==='work'?(nx?`<span>下一個：<b>${NM(nx.id)}</b></span>`:'<b>最後一個動作！</b>')+`<span>${ex.hold?secOf(it.id)+' 秒':it.e+' 個八拍'}</span>`:`<span>${ex.cues[0]}</span>`;
 }
 function advance(){
   if(R.phase==='prep'||R.phase==='rest') return enter('work');
@@ -581,7 +637,21 @@ function frame(now){
   const el=R.paused?R.pAt-R.t0:now-R.t0;
   const st=$('#rstage');
   let svgPose,beatF;
-  if(R.phase==='work'){
+  if(R.phase==='work'&&ex.hold){
+    // Timed hold / stretch: count down seconds; one-sided holds switch sides halfway
+    const dur=R.dur*1000,left=Math.ceil(R.dur-el/1000);
+    if(left!==R.last&&!R.paused){
+      R.last=left;$('#beat').textContent=Math.max(left,0);$('#beat').className='beat';
+      $('#eight').innerHTML=`<small>${ex.stretch?'伸展':'撐住'}・剩餘秒數</small>`;
+      if(ex.sides){const sw=el>=dur/2;$('#rfig').style.transform=sw?'scaleX(-1)':'';$('#rtag').hidden=false;$('#rtag').textContent=sw?'換邊':'第一邊';
+        if(sw&&!R.swapSaid){R.swapSaid=true;chime();say('換邊')}}
+      else if(left===10&&R.dur>=20)say('還有十秒');
+      if(left<=3&&left>0)tone(660,.12,.3);
+    }
+    $('#barf').style.width=Math.min(100,el/dur*100)+'%';
+    if(el>=dur&&!R.paused) advance();
+  }
+  else if(R.phase==='work'){
     const bm=beatMs(it),total=it.e*8;
     beatF=el/bm;const b=Math.floor(beatF);
     if(b!==R.last&&b<total&&!R.paused){
